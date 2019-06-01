@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:SteamAutoLogin"
              mc:Ignorable="d" 
              xmlns:fa="http://schemas.fontawesome.io/icons/" 
-             MinHeight="125" MinWidth="125"
-             Height="125" Width="125">
+             MinHeight="175" MinWidth="175"
+             Height="175" Width="175">
     <Border BorderBrush="#FF755B83" BorderThickness="2">
         <Grid>
             <Grid.Background>
@@ -19,7 +19,10 @@
             <Button HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="43" Background="#7F673AB7" Click="BtnClickLogin">
                 <fa:ImageAwesome Icon="User" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Button>
-            <Label x:Name="AccountAlias" Content="" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" Width="101" Height="55" FontSize="14" FontFamily="Segoe UI Black"/>
+            <Label x:Name="AccountAlias" Content="" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" Width="151" Height="55" FontSize="14" FontFamily="Segoe UI Black"/>
+            <Button HorizontalAlignment="Right" Margin="0,0,106,10" VerticalAlignment="Bottom" Width="43" Background="#7F673AB7" Click="BtnClickEdit">
+                <fa:ImageAwesome Icon="Gear" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Button>
         </Grid>
     </Border>
 </UserControl>

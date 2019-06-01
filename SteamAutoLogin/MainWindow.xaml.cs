@@ -28,10 +28,14 @@ namespace SteamAutoLogin
         private DataStorage Storage { get; }
         public MainWindow()
         {
+            Storage = new DataStorage();
             App.AppMain = this;
             InitializeComponent();
 
             Users = new ObservableCollection<SteamUser>();
+
+            foreach (var user in Storage.LoadUserList())
+                Users.Add(new SteamUser { UserLogin = user });
 
             UsersList.ItemsSource = Users;
 
@@ -60,22 +64,27 @@ namespace SteamAutoLogin
 
                 addNewWindow.Close();
             };
-            
-            Storage = new DataStorage();
         }
 
         public void AddNewUser(LoginData user)
         {
-            Storage.SaveToFile(user);
             Users.Add(new SteamUser
             {
                 UserLogin = user
             });
+            Storage.SaveUser(user);
+        }
+
+        public void EditUser(LoginData targetUser, LoginData newInfo)
+        {
+            Users[Users.IndexOf(Users.First(x => x.UserLogin == targetUser))].UserLogin = newInfo;
+            Storage.SaveUser(newInfo);
         }
 
         public void RemoveUser(LoginData user)
         {
             Users.RemoveAt(Users.IndexOf(Users.First(x => x.UserLogin == user)));
+            Storage.DeleteUser(user);
         }
 
         private void LoginWatchDog()

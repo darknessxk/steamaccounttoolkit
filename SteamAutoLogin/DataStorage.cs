@@ -73,10 +73,13 @@ namespace SteamAutoLogin
             return b;
         }
 
-        public void SaveToFile(LoginData steamUser)
+        public void SaveUser(LoginData user)
         {
-            byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(steamUser.User.ToString()));
+            byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
             string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+
+            DeleteUser(user); // in case of a possible updating action lol
+
             using (FileStream fs = new FileStream(Path.Combine(UsersPath, fileName), FileMode.OpenOrCreate, FileAccess.Write))
             {
                 if (fs.CanWrite)
@@ -86,19 +89,28 @@ namespace SteamAutoLogin
                     {
                         using (CryptoStream cs = new CryptoStream(fs, Encryptor, CryptoStreamMode.Write))
                         {
-                            formatter.Serialize(cs, steamUser);
+                            formatter.Serialize(cs, user);
                         }
                     }
                     else
                     {
-                        formatter.Serialize(fs, steamUser);
+                        formatter.Serialize(fs, user);
                     }
                 }
 
             }
         }
 
-        public IList<LoginData> LoadFileUsers()
+        public void DeleteUser(LoginData user)
+        {
+            byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
+            string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+
+            if (File.Exists(Path.Combine(UsersPath, fileName)))
+                File.Delete(Path.Combine(UsersPath, fileName));
+        }
+
+        public IList<LoginData> LoadUserList()
         {
             List<LoginData> loginList = new List<LoginData>();
             Directory.GetFiles(UsersPath).ToList().ForEach(x =>

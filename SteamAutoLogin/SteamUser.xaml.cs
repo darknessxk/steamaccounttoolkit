@@ -87,5 +87,10 @@ namespace SteamAutoLogin
                 });
             }
         }
+
+        private void BtnClickEdit(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
