@@ -4,33 +4,11 @@ using Microsoft.Win32;
 using System.Threading;
 using SendKeys = System.Windows.Forms.SendKeys;
 using System.Threading.Tasks;
-using System.Security;
-using System.Text;
-using ProtoBuf;
 using HtmlAgilityPack;
 using System.Linq;
 
 namespace SteamAutoLogin
 {
-    [ProtoContract()]
-    public class LoginData
-    {
-        [ProtoMember(0)]
-        public string User { get; set; }
-
-        [ProtoMember(1)]
-        public string Alias { get; set; } = string.Empty;
-
-        [ProtoMember(2)]
-        public string SteamId64 { get; set; } = string.Empty;
-
-        [ProtoMember(3)]
-        public string Pass { get; set; }
-
-        [ProtoMember(4)]
-        public string SteamGuardPrivateKey { get; set; } = string.Empty;
-    }
-
     public static class SteamDesktopApi
     {
         public static bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;

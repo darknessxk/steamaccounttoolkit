@@ -25,7 +25,7 @@ namespace SteamAutoLogin
         AddNew addNewWindow;
 
         private ObservableCollection<SteamUser> Users;
-
+        private DataStorage Storage { get; }
         public MainWindow()
         {
             App.AppMain = this;
@@ -60,10 +60,13 @@ namespace SteamAutoLogin
 
                 addNewWindow.Close();
             };
+            
+            Storage = new DataStorage();
         }
 
         public void AddNewUser(LoginData user)
         {
+            Storage.SaveToFile(user);
             Users.Add(new SteamUser
             {
                 UserLogin = user

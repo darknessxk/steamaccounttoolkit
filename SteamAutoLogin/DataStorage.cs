@@ -4,34 +4,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Security.Cryptography;
-using System.Security;
-using ProtoBuf;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace SteamAutoLogin
 {
-    public static class ProtoSerialize
-    {
-        public static byte[] Serialize<T>(T obj) where T : class
-        {
-            if (obj == null)
-                return new byte[] { };
-            using (var stream = new MemoryStream())
-            {
-                ProtoBuf.Serializer.Serialize<T>(stream, obj);
-                return stream.ToArray();
-            }
-        }
-        public static T Deserialize<T>(byte[] data) where T : class
-        {
-            if (data == null)
-                return default(T);
-            using (var stream = new MemoryStream(data))
-            {
-                return ProtoBuf.Serializer.Deserialize<T>(stream);
-            }
-        }
-    }
-
     public class DataStorage
     {
         private Aes CryptoAlgo { get; }
@@ -45,21 +22,34 @@ namespace SteamAutoLogin
         private ICryptoTransform Decryptor;
         private ICryptoTransform Encryptor;
 
+        private string FileExtension => ".saluser";
+
+        private byte[] AesIV = {
+            12, 24, 32, 64, 10, 20, 40, 50, // 8
+            12, 24, 32, 64, 10, 20, 40, 50, // 16
+        };
+
         public DataStorage()
         {
             CryptoAlgo = AesManaged.Create();
             HashAlgo = new HMACSHA1(Encoder.GetBytes(Properties.Settings.Default.RandomKey_DEV));
+            SHA256 keyHash = SHA256.Create();
 
             if (!Directory.Exists(FolderPath))
                 Directory.CreateDirectory(FolderPath);
 
-            CryptoAlgo.Key = HashAlgo.ComputeHash(Encoder.GetBytes(Properties.Settings.Default.UserEncryptionKey_DEV));
+            if (!Directory.Exists(UsersPath))
+                Directory.CreateDirectory(UsersPath);
+
+            var Hash = keyHash.ComputeHash(Encoder.GetBytes(Properties.Settings.Default.UserEncryptionKey_DEV));
+
+            CryptoAlgo.Key = Hash;
             CryptoAlgo.KeySize = 256;
-            CryptoAlgo.IV = HashAlgo.ComputeHash(Encoder.GetBytes(Properties.Settings.Default.RandomKey_DEV));
+            CryptoAlgo.IV = AesIV;
             CryptoAlgo.Mode = CipherMode.CBC;
 
-            Decryptor = CryptoAlgo.CreateDecryptor();
-            Encryptor = CryptoAlgo.CreateEncryptor();
+            Decryptor = CryptoAlgo.CreateDecryptor(Hash, AesIV);
+            Encryptor = CryptoAlgo.CreateEncryptor(Hash, AesIV);
         }
 
         private byte[] RandomBytes(int count, int rounds = 4)
@@ -83,26 +73,25 @@ namespace SteamAutoLogin
             return b;
         }
 
-        public void SaveToFile(LoginData steamUser, bool encrypted = false)
+        public void SaveToFile(LoginData steamUser)
         {
             byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(steamUser.User.ToString()));
-            string fileName = $"{BitConverter.ToString(hashValue)}.user";
+            string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
             using (FileStream fs = new FileStream(Path.Combine(UsersPath, fileName), FileMode.OpenOrCreate, FileAccess.Write))
             {
                 if (fs.CanWrite)
                 {
-                    if(Properties.Settings.Default.Encrypt)
+                    IFormatter formatter = new BinaryFormatter();
+                    if (Properties.Settings.Default.Encrypt)
                     {
                         using (CryptoStream cs = new CryptoStream(fs, Encryptor, CryptoStreamMode.Write))
                         {
-                            var b = ProtoSerialize.Serialize(steamUser);
-                            cs.Write(b, 0, b.Length);
+                            formatter.Serialize(cs, steamUser);
                         }
                     }
                     else
                     {
-                        var b = ProtoSerialize.Serialize(steamUser);
-                        fs.Write(b, 0, b.Length);
+                        formatter.Serialize(fs, steamUser);
                     }
                 }
 
@@ -114,28 +103,23 @@ namespace SteamAutoLogin
             List<LoginData> loginList = new List<LoginData>();
             Directory.GetFiles(UsersPath).ToList().ForEach(x =>
             {
-                if(x.EndsWith(".user"))
+                if(x.EndsWith(FileExtension))
                 {
                     using(FileStream fs = new FileStream(x, FileMode.Open, FileAccess.Read))
                     {
                         if(fs.CanRead)
                         {
+                            IFormatter formatter = new BinaryFormatter();
                             if (Properties.Settings.Default.Encrypt)
                             {
                                 using (CryptoStream cs = new CryptoStream(fs, Decryptor, CryptoStreamMode.Read))
                                 {
-                                    var b = new byte[cs.Length];
-                                    cs.Read(b, 0, b.Length);
-
-                                    loginList.Add(ProtoSerialize.Deserialize<LoginData>(b));
+                                    loginList.Add(formatter.Deserialize(fs) as LoginData);
                                 }
                             }
                             else
                             {
-                                var b = new byte[fs.Length];
-                                fs.Read(b, 0, b.Length);
-
-                                loginList.Add(ProtoSerialize.Deserialize<LoginData>(b));
+                                loginList.Add(formatter.Deserialize(fs) as LoginData);
                             }
                         }
                     }

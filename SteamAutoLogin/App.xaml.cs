@@ -13,7 +13,6 @@ namespace SteamAutoLogin
     /// </summary>
     public partial class App : Application
     {
-        public static DataStorage Storage => new DataStorage();
         public static MainWindow AppMain;
     }
 }
