@@ -1,0 +1,42 @@
+﻿<Controls:MetroWindow 
+    x:Class="SteamAutoLogin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SteamAutoLogin"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+     TextElement.FontWeight="Regular"
+     TextElement.FontSize="13"
+     TextOptions.TextFormattingMode="Ideal"
+     TextOptions.TextRenderingMode="Auto"
+     Background="{DynamicResource MaterialDesignPaper}"
+     FontFamily="{DynamicResource MaterialDesignFont}"
+                      MaxHeight="450" MaxWidth="800"
+                      MinHeight="450" MinWidth="800"
+        Title="Steam Auto Login" Height="450" Width="800">
+    <Grid>
+        <Ellipse x:Name="SteamInMain" Fill="#FFF40000" HorizontalAlignment="Left" Height="27" Margin="403,9,0,0" Stroke="Black" VerticalAlignment="Top" Width="27"/>
+        <Label Content="Steam Main" HorizontalAlignment="Left" Margin="435,10,0,0" VerticalAlignment="Top"/>
+        <Ellipse x:Name="SteamCanLogin" Fill="#FFF40000" HorizontalAlignment="Left" Height="27" Margin="148,9,0,0" Stroke="Black" VerticalAlignment="Top" Width="27"/>
+        <Label Content="Steam Login" HorizontalAlignment="Left" Margin="180,10,0,0" VerticalAlignment="Top"/>
+        <Ellipse x:Name="SteamGuardReq" Fill="#FFF40000" HorizontalAlignment="Left" Height="27" Margin="275,9,0,0" Stroke="Black" VerticalAlignment="Top" Width="27"/>
+        <Label Content="Steam Guard" HorizontalAlignment="Left" Margin="307,10,0,0" VerticalAlignment="Top"/>
+        <Ellipse x:Name="SteamIsOpen" Fill="#FFF40000" HorizontalAlignment="Left" Height="27" Margin="12,9,0,0" Stroke="Black" VerticalAlignment="Top" Width="27"/>
+        <Label Content="Steam Process" HorizontalAlignment="Left" Margin="44,10,0,0" VerticalAlignment="Top"/>
+        <Button Content="Add Account" HorizontalAlignment="Left" Margin="667,386,0,0" VerticalAlignment="Top" Width="115" Height="23" Click="BtnAddNew"/>
+        <ListView x:Name="UsersList" HorizontalAlignment="Left" Height="340" Margin="10,41,0,0" VerticalAlignment="Top" Width="772" BorderThickness="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource MaterialDesignPaper}" />
+            </ListView.BorderBrush>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+    </Grid>
+</Controls:MetroWindow>
