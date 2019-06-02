@@ -22,6 +22,3 @@ If you have many accounts and want to swap through then this software will handl
 * Functionality: Cloud Saving with at least 2 options: Google Drive and FTP (Target Version 0.04)
 
 --- **More milestones can be added anytime**
-
-### Developer Notes
-In the future this code will be ported to be cross platform using Web Technologies like Chromium for UI and instead of C#
