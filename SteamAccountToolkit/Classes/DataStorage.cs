@@ -7,14 +7,14 @@ using System.Security.Cryptography;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 
-namespace SteamAutoLogin
+namespace SteamAccountToolkit
 {
     public class DataStorage
     {
         private Aes CryptoAlgo { get; }
         private HMACSHA1 HashAlgo { get; }
 
-        private string FolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"KatsuhiroGG\SteamAutoLogin\");
+        private string FolderPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"KatsuhiroGG\SteamAccountToolkit\");
         private string UsersPath => Path.Combine(FolderPath, "Users");
 
         private Encoding Encoder => Encoding.UTF8;
@@ -73,7 +73,7 @@ namespace SteamAutoLogin
             return b;
         }
 
-        public void SaveUser(LoginData user)
+        public void SaveUser(SteamUser user)
         {
             byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
             string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
@@ -101,7 +101,7 @@ namespace SteamAutoLogin
             }
         }
 
-        public void DeleteUser(LoginData user)
+        public void DeleteUser(SteamUser user)
         {
             byte[] hashValue = HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
             string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
@@ -110,9 +110,9 @@ namespace SteamAutoLogin
                 File.Delete(Path.Combine(UsersPath, fileName));
         }
 
-        public IList<LoginData> LoadUserList()
+        public IList<SteamUser> LoadUserList()
         {
-            List<LoginData> loginList = new List<LoginData>();
+            List<SteamUser> loginList = new List<SteamUser>();
             Directory.GetFiles(UsersPath).ToList().ForEach(x =>
             {
                 if(x.EndsWith(FileExtension))
@@ -126,12 +126,12 @@ namespace SteamAutoLogin
                             {
                                 using (CryptoStream cs = new CryptoStream(fs, Decryptor, CryptoStreamMode.Read))
                                 {
-                                    loginList.Add(formatter.Deserialize(fs) as LoginData);
+                                    loginList.Add(formatter.Deserialize(fs) as SteamUser);
                                 }
                             }
                             else
                             {
-                                loginList.Add(formatter.Deserialize(fs) as LoginData);
+                                loginList.Add(formatter.Deserialize(fs) as SteamUser);
                             }
                         }
                     }

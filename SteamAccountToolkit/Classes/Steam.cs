@@ -6,16 +6,20 @@ using SendKeys = System.Windows.Forms.SendKeys;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Linq;
+using System.Collections.ObjectModel;
 
-namespace SteamAutoLogin
+namespace SteamAccountToolkit
 {
-    public static class SteamDesktopApi
+    public class Steam
     {
-        public static bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;
-        public static bool IsOnSteamGuard() => GetSteamLoginWindow() != IntPtr.Zero;
-        public static bool IsOnLogin() => GetSteamLoginWindow() != IntPtr.Zero;
+        public bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;
+        public bool IsOnSteamGuard() => GetSteamLoginWindow() != IntPtr.Zero;
+        public bool IsOnLogin() => GetSteamLoginWindow() != IntPtr.Zero;
+        private DataStorage Storage { get; } = new DataStorage();
 
-        public static string GetSteamPath()
+        public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
+
+        public string GetSteamPath()
         {
             RegistryKey rKey;
             if (Environment.Is64BitProcess)
@@ -34,26 +38,7 @@ namespace SteamAutoLogin
             }
         }
 
-        public static string GetProfileIconUrl(LoginData login)
-        {
-            if(login.SteamId64 != string.Empty)
-            {
-                var profileUrl = $"https://steamcommunity.com/profiles/{login.SteamId64}";
-
-                try
-                {
-                    HtmlDocument doc = new HtmlWeb().Load(new Uri(profileUrl));
-                    return doc.DocumentNode.Descendants().Where(n => n.HasClass("playerAvatarAutoSizeInner")).First().FirstChild.GetAttributeValue("src", null);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
-            return string.Empty;
-        }
-
-        public static IntPtr GetSteamWarningWindow()
+        public IntPtr GetSteamWarningWindow()
         {
             var hwnd = NtApi.FindWindowEx(IntPtr.Zero, IntPtr.Zero, "vguiPopupWindow", @"Steam —");
             if (hwnd == IntPtr.Zero)
@@ -61,12 +46,12 @@ namespace SteamAutoLogin
             return hwnd;
         }
 
-        public static IntPtr GetSteamLoginWindow()
+        public IntPtr GetSteamLoginWindow()
         {
             return NtApi.FindWindowEx(IntPtr.Zero, IntPtr.Zero, "vguiPopupWindow", "Steam Login");
         }
 
-        public static IntPtr GetSteamMainWindow()
+        public IntPtr GetSteamMainWindow()
         {
             var SteamHwnd = NtApi.FindWindowEx(IntPtr.Zero, IntPtr.Zero, "vguiPopupWindow", "Steam");
             if (SteamHwnd != IntPtr.Zero)
@@ -77,19 +62,24 @@ namespace SteamAutoLogin
             return IntPtr.Zero;
         }
 
-        public static IntPtr GetSteamGuardWindow()
+        public IntPtr GetSteamGuardWindow()
         {
             //WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard —")) || WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard -"))
             var window = WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard —") || w.GetWindowText().StartsWith("Steam Guard -"));
             return window.Handle;
         }
 
-        public static void QuitSteam()
+        public void Shutdown()
         {
             Process.Start(new ProcessStartInfo(GetSteamPath(), "-shutdown"));
         }
 
-        public static void SteamLogin(LoginData login)
+        public string GenerateAuthCode(SteamUser login)
+        {
+            return login.SteamGuard.GenerateSteamGuardCode();
+        }
+
+        public void DoLogin(SteamUser login)
         {
             var task = Task.Run(() =>
             {
@@ -99,8 +89,6 @@ namespace SteamAutoLogin
                 {
                     Thread.Sleep(10);
                 }
-
-                SteamAuth.SteamGuardAccount acc = new SteamAuth.SteamGuardAccount { SharedSecret = login.SteamGuardPrivateKey.ToString() };
 
                 while (IsOnSteamGuard() && !IsOnMainWindow())
                 {
@@ -126,7 +114,7 @@ namespace SteamAutoLogin
                     if (NtApi.GetForegroundWindow() != sgHwnd)
                         NtApi.SetForegroundWindow(sgHwnd);
 
-                    foreach (char c in acc.GenerateSteamGuardCode())
+                    foreach (char c in login.SteamGuardCode)
                     {
                         NtApi.SetForegroundWindow(sgHwnd);
                         Thread.Sleep(5);
