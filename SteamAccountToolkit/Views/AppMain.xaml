@@ -7,8 +7,7 @@
     xmlns:Views="clr-namespace:SteamAccountToolkit.Views"
     xmlns:ViewModels="clr-namespace:SteamAccountToolkit.ViewModels"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:prism="http://prismlibrary.com/"             
-    xmlns:fa="http://schemas.fontawesome.io/icons/" 
+    xmlns:prism="http://prismlibrary.com/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared" 
     x:Class="SteamAccountToolkit.Views.AppMain"
     mc:Ignorable="d"
@@ -31,11 +30,11 @@
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
             <Button Margin="2" Command="{Binding NavigateCommand}" CommandParameter="UsersList">
-                <fa:ImageAwesome Icon="Users" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Label Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}"/>
             </Button>
 
             <Button Margin="2">
-                <fa:ImageAwesome Icon="Gears" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Label Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}"/>
             </Button>
         </StackPanel>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" Margin="5" />
