@@ -110,7 +110,7 @@ namespace SteamAccountToolkit.Classes
                 File.Delete(Path.Combine(UsersPath, fileName));
         }
 
-        public IList<SteamUser> LoadUserList()
+        public List<SteamUser> LoadUserList()
         {
             List<SteamUser> loginList = new List<SteamUser>();
             Directory.GetFiles(UsersPath).ToList().ForEach(x =>
@@ -126,12 +126,17 @@ namespace SteamAccountToolkit.Classes
                             {
                                 using (CryptoStream cs = new CryptoStream(fs, Decryptor, CryptoStreamMode.Read))
                                 {
-                                    loginList.Add(formatter.Deserialize(fs) as SteamUser);
+                                    var obj = formatter.Deserialize(cs);
+
+                                    if(obj is SteamUser)
+                                        loginList.Add(obj as SteamUser);
                                 }
                             }
                             else
                             {
-                                loginList.Add(formatter.Deserialize(fs) as SteamUser);
+                                var obj = formatter.Deserialize(fs);
+                                if (obj is SteamUser)
+                                    loginList.Add(obj as SteamUser);
                             }
                         }
                     }
