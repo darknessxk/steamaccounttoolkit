@@ -19,6 +19,12 @@ namespace SteamAccountToolkit.Classes
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
 
+        public Steam()
+        {
+            var userList = Storage.LoadUserList();
+            userList.ForEach(user => Users.Add(user));
+        }
+
         public string GetSteamPath()
         {
             RegistryKey rKey;
