@@ -18,6 +18,8 @@ namespace SteamAccountToolkit
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<Views.UsersList>("UsersList");
+            containerRegistry.RegisterForNavigation<Views.UserPage>("UserPage");
+            containerRegistry.RegisterForNavigation<Views.AddUser>("AddUser");
         }
     }
 }
