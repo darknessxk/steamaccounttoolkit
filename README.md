@@ -1,4 +1,4 @@
-# Steam Auto Login
+# Steam Account Toolkit
 This is project focused on my studies routine and livestream on [Twitch.TV](http://twitch.darknessxk.com)
 
 ### Techonologies/Libraries
@@ -20,5 +20,6 @@ If you have many accounts and want to swap through then this software will handl
 * UI: Better per user size management (Target Version 0.02)
 * Functionality: User Settings for Cryptography management per account  (Target Version 0.03)
 * Functionality: Cloud Saving with at least 2 options: Google Drive and FTP (Target Version 0.04)
+* Functionality: Accept Trades through the app (Target Version 0.04)
 
 --- **More milestones can be added anytime**
