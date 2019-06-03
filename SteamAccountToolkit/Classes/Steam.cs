@@ -15,7 +15,7 @@ namespace SteamAccountToolkit
         public bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;
         public bool IsOnSteamGuard() => GetSteamLoginWindow() != IntPtr.Zero;
         public bool IsOnLogin() => GetSteamLoginWindow() != IntPtr.Zero;
-        private DataStorage Storage { get; } = new DataStorage();
+        private Storage Storage { get; } = new Storage();
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
 

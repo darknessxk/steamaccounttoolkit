@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace SteamAccountToolkit
 {
-    public class DataStorage
+    public class Storage
     {
         private Aes CryptoAlgo { get; }
         private HMACSHA1 HashAlgo { get; }
@@ -22,14 +22,14 @@ namespace SteamAccountToolkit
         private ICryptoTransform Decryptor;
         private ICryptoTransform Encryptor;
 
-        private string FileExtension => ".saluser";
+        private string FileExtension => ".satuser";
 
         private byte[] AesIV = {
             12, 24, 32, 64, 10, 20, 40, 50, // 8
             12, 24, 32, 64, 10, 20, 40, 50, // 16
         };
 
-        public DataStorage()
+        public Storage()
         {
             CryptoAlgo = AesManaged.Create();
             HashAlgo = new HMACSHA1(Encoder.GetBytes(Properties.Settings.Default.RandomKey_DEV));

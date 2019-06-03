@@ -113,7 +113,7 @@
     <Compile Include="Views\AppMain.xaml.cs">
       <DependentUpon>AppMain.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Classes\DataStorage.cs" />
+    <Compile Include="Classes\Storage.cs" />
     <Compile Include="Classes\SteamUser.cs" />
     <Compile Include="Classes\Steam.cs" />
     <Compile Include="Classes\WindowHandle.cs" />
