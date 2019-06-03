@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="SteamAccountToolkit.Views.AddUser"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             Height="450" Width="800"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="300">
+        <Label Content="Add New Steam User" HorizontalAlignment="Center" FontSize="24" Margin="15"/>
+        <Label Content="Username*"/>
+        <TextBox />
+        <Label Content="Password*"/>
+        <PasswordBox />
+        <Label Content="SteamID 64"/>
+        <TextBox />
+        <Label Content="Steam Guard Shared Key"/>
+        <PasswordBox />
+        <Button Margin="10" Content="Save" />
+        <Button Margin="10" Content="Cancel" />
+    </StackPanel>
+</UserControl>

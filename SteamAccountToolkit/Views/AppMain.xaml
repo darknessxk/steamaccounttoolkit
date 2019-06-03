@@ -18,9 +18,9 @@
     TextOptions.TextRenderingMode="Auto"
     Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    MaxHeight="450" MaxWidth="800"
-    MinHeight="450" MinWidth="800"
-    Title="{Binding Title}" Height="450" Width="800" 
+    MaxHeight="500" MaxWidth="850"
+    MinHeight="500" MinWidth="850"
+    Title="{Binding Title}" Height="500" Width="850" 
     prism:ViewModelLocator.AutoWireViewModel="True">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
