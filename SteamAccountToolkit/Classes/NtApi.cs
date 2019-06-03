@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SteamAccountToolkit
+namespace SteamAccountToolkit.Classes
 {
     public static class NtApi
     {

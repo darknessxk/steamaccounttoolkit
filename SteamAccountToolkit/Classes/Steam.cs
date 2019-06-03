@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 using System.Linq;
 using System.Collections.ObjectModel;
 
-namespace SteamAccountToolkit
+namespace SteamAccountToolkit.Classes
 {
     public class Steam
     {

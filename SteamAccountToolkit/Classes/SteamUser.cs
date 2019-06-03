@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using HtmlAgilityPack;
 
-namespace SteamAccountToolkit
+namespace SteamAccountToolkit.Classes
 {
     [Serializable]
     public class SteamUser

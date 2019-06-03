@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 
-namespace SteamAccountToolkit
+namespace SteamAccountToolkit.Classes
 {
     public class Storage
     {

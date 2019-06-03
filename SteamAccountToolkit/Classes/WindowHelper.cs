@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SteamAccountToolkit
+namespace SteamAccountToolkit.Classes
 {
     public static class WindowHelper
     {
