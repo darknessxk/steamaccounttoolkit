@@ -26,7 +26,7 @@ With the ease of an all in one toolkit
 
 ## Milestones to Version 1.0
 * Code: Port to MVVM pattern (Target Version 0.01) **(DONE)**
-* Code: Nt Api usage Optmization (Target Version 0.01)
+* Code: Nt Api usage Optmization (Target Version 0.01) **(DONE)**
 * UI: Add theme management system (Target Version 0.02)
 * UI: Better per user size management (Target Version 0.02)
 * Functionality: Steam Guard In-App (Target Version 0.01) **(DONE)**
