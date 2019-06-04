@@ -25,18 +25,22 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#FF755B83" BorderThickness="2" Width="130" Height="130">
+                    <Border BorderBrush="#FF755B83" BorderThickness="2" Width="130" Height="160">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseLeftButtonDown">
                                 <prism:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ViewUserCommand}" CommandParameter="{Binding .}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
 
-                        <Border.Background>
-                            <ImageBrush ImageSource="/SteamAccountToolkit;component/Assets/user_default.jpg"/>
-                        </Border.Background>
-
-                        <Label VerticalAlignment="Bottom" Opacity="0.40" Content="{Binding User}" />
+                        <DockPanel>
+                            <Image DockPanel.Dock="Top" Source="{Binding ProfileImage}" />
+                            <Grid DockPanel.Dock="Bottom">
+                                <Grid.Background>
+                                    <SolidColorBrush Color="#FFF0F0F0" />
+                                </Grid.Background>
+                                <Label VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
+                            </Grid>
+                        </DockPanel>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>

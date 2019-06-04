@@ -15,6 +15,18 @@ namespace SteamAccountToolkit
             return Container.Resolve<Views.AppMain>();
         }
 
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            Globals.IsAppRunning = true;
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            Globals.IsAppRunning = false;
+        }
+
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<Views.UsersList>("UsersList");

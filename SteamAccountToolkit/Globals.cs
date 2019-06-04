@@ -11,5 +11,6 @@ namespace SteamAccountToolkit
     {
         public static Classes.Steam Steam { get; } = new Classes.Steam();
         public static ObservableCollection<Classes.SteamUser> Users => Steam.Users;
+        public static bool IsAppRunning;
     }
 }

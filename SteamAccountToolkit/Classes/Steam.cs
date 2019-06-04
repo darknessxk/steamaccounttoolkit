@@ -22,7 +22,24 @@ namespace SteamAccountToolkit.Classes
         public Steam()
         {
             var userList = Storage.LoadUserList();
-            userList.ForEach(user => Users.Add(user));
+            userList.ForEach(user =>
+            {
+                user.Initialize();
+                user.UpdateImage();
+                Users.Add(user);
+            });
+        }
+
+        public void AddNewUser(SteamUser user)
+        {
+            Users.Add(user);
+            Storage.SaveUser(user);
+        }
+
+        public void DeleteUser(SteamUser user)
+        {
+            Users.Remove(user);
+            Storage.DeleteUser(user);
         }
 
         public string GetSteamPath()

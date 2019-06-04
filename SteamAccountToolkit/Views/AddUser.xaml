@@ -7,14 +7,14 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="300">
         <Label Content="Add New Steam User" HorizontalAlignment="Center" FontSize="24" Margin="15"/>
         <Label Content="Username*"/>
-        <TextBox />
+        <TextBox Text="{Binding User.User, Mode=TwoWay}" />
         <Label Content="Password*"/>
-        <PasswordBox />
+        <TextBox Text="{Binding User.Pass, Mode=TwoWay}" />
         <Label Content="SteamID 64"/>
-        <TextBox />
+        <TextBox Text="{Binding User.SteamId64, Mode=TwoWay}" />
         <Label Content="Steam Guard Shared Key"/>
-        <PasswordBox />
-        <Button Margin="10" Content="Save" />
-        <Button Margin="10" Content="Cancel" />
+        <TextBox Text="{Binding User.AuthKey, Mode=TwoWay}" />
+        <Button Margin="10" Content="Save" Command="{Binding AddUserCommand}" />
+        <Button Margin="10" Content="Cancel" Command="{Binding CancelCommand}" />
     </StackPanel>
 </UserControl>

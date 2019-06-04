@@ -2,7 +2,7 @@
 using Prism.Mvvm;
 using Prism.Regions;
 using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Linq;
 
 namespace SteamAccountToolkit.ViewModels
@@ -16,9 +16,98 @@ namespace SteamAccountToolkit.ViewModels
             set => SetProperty(ref _user, value);
         }
 
-        public UserPageViewModel()
-        {
+        public DelegateCommand DeleteUserCommand { get; private set; }
+        public DelegateCommand CopySteamGuardCommand { get; private set; }
+        public DelegateCommand LoginCommand { get; private set; }
+        public DelegateCommand EditUserCommand { get; private set; }
+        public DelegateCommand GoBackCommand { get; private set; }
 
+        private string _steamGuard;
+        public string SteamGuard
+        {
+            get => _steamGuard;
+            set => SetProperty(ref _steamGuard, value);
+        }
+
+        private Thread _steamGuardTh;
+
+        private IRegionManager _regionManager;
+
+        public UserPageViewModel(IRegionManager regionManager)
+        {
+            _regionManager = regionManager;
+            DeleteUserCommand = new DelegateCommand(DeleteUser);
+            CopySteamGuardCommand = new DelegateCommand(CopySteamGuard);
+            LoginCommand = new DelegateCommand(Login);
+            EditUserCommand = new DelegateCommand(EditUser);
+            GoBackCommand = new DelegateCommand(GoBack);
+
+            _steamGuardTh = new Thread(SteamGuardThread);
+            _steamGuardTh.Start();
+        }
+
+        private int IntervalPerTick = 1000; //ms
+        private int _ThreadTickCount;
+        public int ThreadTickCount
+        {
+            get => _ThreadTickCount;
+            set => SetProperty(ref _ThreadTickCount, value);
+        }
+
+        private int _steamGuardUpdateInterval = 10;
+        public int SteamGuardUpdateInterval
+        {
+            get => _steamGuardUpdateInterval;
+            set => SetProperty(ref _steamGuardUpdateInterval, value);
+        }
+        
+        private void SteamGuardThread()
+        {
+            while(Globals.IsAppRunning)
+            {
+                if (User == null)
+                    Thread.Sleep(100);
+                else
+                {
+                    if (string.IsNullOrEmpty(SteamGuard))
+                        SteamGuard = User.SteamGuard.GenerateSteamGuardCodeForTime(DateTime.Now.AddSeconds(SteamGuardUpdateInterval / 1000).Ticks);
+
+                    if (SteamGuardUpdateInterval < ThreadTickCount)
+                    {
+                        SteamGuard = User.SteamGuard.GenerateSteamGuardCodeForTime(DateTime.Now.AddSeconds(SteamGuardUpdateInterval / 1000).Ticks);
+                        ThreadTickCount = 0;
+                    }
+
+                    Thread.Sleep(IntervalPerTick);
+                    ThreadTickCount = ThreadTickCount + 1;
+                }
+            }
+        }
+
+        private void GoBack()
+        {
+            _regionManager.RequestNavigate("ContentRegion", "UsersList");
+        }
+
+        private void CopySteamGuard()
+        {
+            System.Windows.Clipboard.SetText(User.SteamGuardCode);
+        }
+
+        private void EditUser()
+        {
+            // W I P
+        }
+
+        private void Login()
+        {
+            Globals.Steam.DoLogin(User);
+        }
+
+        private void DeleteUser()
+        {
+            Globals.Steam.DeleteUser(User);
+            _regionManager.RequestNavigate("ContentRegion", "UsersList");
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
