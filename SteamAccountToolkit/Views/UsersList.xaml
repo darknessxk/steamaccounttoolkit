@@ -12,12 +12,12 @@
         
     </UserControl.Resources>
     <DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <Button>
                 <Label Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}"/>
             </Button>
         </StackPanel>
-        <ListView SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}">
+        <ListView BorderThickness="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}" BorderBrush="#898C3CFF">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />

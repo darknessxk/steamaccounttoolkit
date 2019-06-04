@@ -2,11 +2,9 @@
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Threading;
-using SendKeys = System.Windows.Forms.SendKeys;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Windows.Forms;
 
 namespace SteamAccountToolkit.Classes
 {
@@ -19,7 +17,21 @@ namespace SteamAccountToolkit.Classes
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
 
+        public bool IsLoading { get; set; } = true;
+        public bool IsPathPending => string.IsNullOrEmpty(GetSteamPath());
+
         public Steam()
+        {
+            
+        }
+
+        public void Initialize()
+        {
+            LoadUserList();
+            IsLoading = false;
+        }
+
+        public void LoadUserList()
         {
             var userList = Storage.LoadUserList();
             userList.ForEach(user =>
@@ -87,7 +99,6 @@ namespace SteamAccountToolkit.Classes
 
         public IntPtr GetSteamGuardWindow()
         {
-            //WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard —")) || WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard -"))
             var window = WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard —") || w.GetWindowText().StartsWith("Steam Guard -"));
             return window.Handle;
         }
@@ -97,21 +108,22 @@ namespace SteamAccountToolkit.Classes
             Process.Start(new ProcessStartInfo(GetSteamPath(), "-shutdown"));
         }
 
-        public string GenerateAuthCode(SteamUser login)
-        {
-            return login.SteamGuard.GenerateSteamGuardCode();
-        }
-
         public void DoLogin(SteamUser login)
         {
             var task = Task.Run(() =>
             {
-                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.User} {login.Pass.ToString()}"));
-
+                bool calledShutdown = false;
                 while (!IsOnSteamGuard() && !IsOnMainWindow())
                 {
+                    if(!calledShutdown)
+                    {
+                        calledShutdown = true;
+                        Shutdown();
+                    }
                     Thread.Sleep(10);
                 }
+
+                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.User} {login.Pass.ToString()}"));
 
                 while (IsOnSteamGuard() && !IsOnMainWindow())
                 {
@@ -133,27 +145,16 @@ namespace SteamAccountToolkit.Classes
                         attempts++;
                     }
 
-                    // Second Check
-                    if (NtApi.GetForegroundWindow() != sgHwnd)
-                        NtApi.SetForegroundWindow(sgHwnd);
-
-                    foreach (char c in login.SteamGuardCode)
-                    {
-                        NtApi.SetForegroundWindow(sgHwnd);
-                        Thread.Sleep(5);
-                        SendKeys.SendWait(c.ToString());
-                    }
+                    new WinHandle(sgHwnd).SendKeys(login.SteamGuardCode);
 
                     NtApi.SetForegroundWindow(sgHwnd);
 
                     SendKeys.SendWait("{ENTER}");
 
                     Thread.Sleep(5000); // i think 5 seconds is enough hmm (3 seconds sometimes send another key command)
-
                     if (!IsOnSteamGuard())
                         break;
                 }
-
                 //continue to main window gg!
             });
         }

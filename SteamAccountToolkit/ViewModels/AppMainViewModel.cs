@@ -19,11 +19,19 @@ namespace SteamAccountToolkit.ViewModels
         }
 
         public DelegateCommand<string> NavigateCommand { get; private set; }
+        public DelegateCommand LoadedCommand { get; private set; }
 
         public AppMainViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
             NavigateCommand = new DelegateCommand<string>(Navigate);
+            LoadedCommand = new DelegateCommand(Loaded);
+        }
+
+        private void Loaded()
+        {
+            Globals.Steam.Initialize();
+            Navigate("UsersList");
         }
 
         private void Navigate(string path)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using WinSendKeys = System.Windows.Forms.SendKeys;
 
 namespace SteamAccountToolkit.Classes
 {
@@ -83,6 +83,32 @@ namespace SteamAccountToolkit.Classes
             } while (aSize == limit - 1);
 
             return sb.ToString();
+        }
+
+        public static WinHandle SendKeys(this WinHandle win, string text, bool sendCharbyChar = false, int interval = 10)
+        {
+            if(sendCharbyChar)
+                foreach (char c in text)
+                {
+                    System.Threading.Thread.Sleep(interval);
+                    win.SendKey(c);
+                }
+            else
+            {
+                if (NtApi.GetForegroundWindow() != win.Handle)
+                    NtApi.SetForegroundWindow(win.Handle);
+                WinSendKeys.SendWait(text);
+            }
+
+            return win;
+        }
+
+        public static WinHandle SendKey(this WinHandle win, char c)
+        {
+            if (NtApi.GetForegroundWindow() != win.Handle)
+                NtApi.SetForegroundWindow(win.Handle);
+            WinSendKeys.SendWait(c.ToString());
+            return win;
         }
 
         public static bool IsVisible(this WinHandle win)
