@@ -33,9 +33,6 @@
                         <DockPanel>
                             <Image DockPanel.Dock="Top" Source="{Binding ProfileImage}" />
                             <Grid DockPanel.Dock="Bottom">
-                                <Grid.Background>
-                                    <SolidColorBrush Color="#FFF0F0F0" />
-                                </Grid.Background>
                                 <Label VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
                             </Grid>
                         </DockPanel>
