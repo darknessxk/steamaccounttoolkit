@@ -25,52 +25,73 @@ namespace SteamAccountToolkit.Classes
 
         public SteamAuth.SteamGuardAccount SteamGuard => new SteamAuth.SteamGuardAccount { SharedSecret = AuthKey.ToString() };
 
+        public string SteamGuardCode => SteamGuard.GenerateSteamGuardCode();
+
         public string ProfileUrl => SteamId64 == string.Empty ? string.Empty : $"https://steamcommunity.com/profiles/{SteamId64}";
 
+        private HtmlDocument _profileDocument;
+
+        private BitmapImage _profileImage;
         public BitmapImage ProfileImage
         { 
             get
             {
-                var img = new BitmapImage();
-                if (SteamId64 == string.Empty)
-                {
-                    img.BeginInit();
-                    img.UriSource = new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
-                    img.EndInit();
+                if (_profileImage == null)
+                    UpdateImage();
 
-                    return img;
-                }
-
-                var bData = new WebClient().DownloadData(ProfileIconUrl);
-                MemoryStream ms = new MemoryStream(bData);
-                img.BeginInit();
-                img.StreamSource = ms;
-                img.EndInit();
-                return img;
+                return _profileImage;
             }
         }
 
-        public string SteamGuardCode => SteamGuard.GenerateSteamGuardCode();
-
+        private string _personaName;
         public string PersonaName {
             get
             {
+                if (_profileDocument == null)
+                    Initialize();
                 if (SteamId64 == string.Empty)
-                    return User;
-                HtmlDocument doc = new HtmlWeb().Load(new Uri(ProfileUrl));
-                return doc.DocumentNode.Descendants().Where(n => n.HasClass("actual_persona_name")).First().GetDirectInnerText();
+                    _personaName = User;
+                else
+                    _personaName = _profileDocument.DocumentNode.Descendants().Where(n => n.HasClass("actual_persona_name")).First().GetDirectInnerText();
+                return _personaName;
             }
         }
 
+        private string _profileIconUrl;
         public string ProfileIconUrl
         {
             get
             {
-                if (SteamId64 == string.Empty)
-                    return string.Empty;
-                HtmlDocument doc = new HtmlWeb().Load(new Uri(ProfileUrl));
-                return doc.DocumentNode.Descendants().Where(n => n.HasClass("playerAvatarAutoSizeInner")).First().FirstChild.GetAttributeValue("src", null);
+                if (_profileDocument == null)
+                    Initialize();
+                if (string.IsNullOrEmpty(_profileIconUrl))
+                    _profileIconUrl = _profileDocument.DocumentNode.Descendants().Where(n => n.HasClass("playerAvatarAutoSizeInner")).First().FirstChild.GetAttributeValue("src", null);
+                return _profileIconUrl;
             }
+        }
+
+        public void UpdateImage()
+        {
+            _profileImage = new BitmapImage();
+            if (SteamId64 == string.Empty)
+            {
+                _profileImage.BeginInit();
+                _profileImage.UriSource = new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
+                _profileImage.EndInit();
+            }
+            else
+            {
+                var bData = new WebClient().DownloadData(ProfileIconUrl);
+                MemoryStream ms = new MemoryStream(bData);
+                _profileImage.BeginInit();
+                _profileImage.StreamSource = ms;
+                _profileImage.EndInit();
+            }
+        }
+
+        public void Initialize()
+        {
+            _profileDocument = new HtmlWeb().Load(new Uri(ProfileUrl));
         }
     }
 }
