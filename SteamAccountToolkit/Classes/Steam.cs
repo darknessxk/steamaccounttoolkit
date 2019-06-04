@@ -5,6 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
+using System.IO;
+using System.Security.Cryptography;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Linq;
 
 namespace SteamAccountToolkit.Classes
 {
@@ -20,6 +26,10 @@ namespace SteamAccountToolkit.Classes
         public bool IsLoading { get; set; } = true;
         public bool IsPathPending => string.IsNullOrEmpty(GetSteamPath());
 
+        private string FileExtension => ".satuser";
+        private Encoding Encoder => Encoding.UTF8;
+        public string UsersPath => Path.Combine(Storage.FolderPath, "Users");
+
         public Steam(Storage storage)
         {
             Storage = storage;
@@ -33,25 +43,80 @@ namespace SteamAccountToolkit.Classes
 
         public void LoadUserList()
         {
-            var userList = Storage.LoadUserList();
-            userList.ForEach(user =>
+            Directory.GetFiles(UsersPath).ToList().ForEach(x =>
             {
-                user.Initialize();
-                user.UpdateImage();
-                Users.Add(user);
+                if (x.EndsWith(FileExtension))
+                {
+                    LoadUserFromFile(x);
+                }
             });
+        }
+
+        public void LoadUserFromFile(string FilePath)
+        {
+            var pak = Storage.Load(FilePath, Storage.FileHashAlgo.ComputeHash(Encoder.GetBytes("SteamUser")));
+            if (pak.Data.Length > 0)
+            {
+                using (MemoryStream ms = new MemoryStream(pak.Data))
+                {
+                    IFormatter f = new BinaryFormatter();
+                    object b = null;
+                    if (Properties.Settings.Default.Encrypt)
+                        using (CryptoStream cs = new CryptoStream(ms, Storage.Decryptor, CryptoStreamMode.Write))
+                            b = f.Deserialize(cs);
+                    else
+                        b = f.Deserialize(ms);
+
+                    if (b is SteamUser)
+                    {
+                        var user = b as SteamUser;
+
+                        user.Initialize();
+                        user.UpdateImage();
+                        Users.Add(user);
+                    }
+                }
+            }
         }
 
         public void AddNewUser(SteamUser user)
         {
+            user.Initialize();
             Users.Add(user);
-            Storage.SaveUser(user);
+
+            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
+            string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+
+            DeleteUser(user); // in case of a possible updating action lol
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                IFormatter f = new BinaryFormatter();
+
+                if (Properties.Settings.Default.Encrypt)
+                    using (CryptoStream cs = new CryptoStream(ms, Storage.Encryptor, CryptoStreamMode.Write))
+                        f.Serialize(cs, user);
+                else
+                    f.Serialize(ms, user);
+
+
+                Storage.Save(Path.Combine(UsersPath, fileName), new Storage.DataPack(Storage.FileHashAlgo)
+                {
+                    Data = ms.ToArray(),
+                    Header = new Storage.DataHeader(Storage.FileHashAlgo.ComputeHash(Encoder.GetBytes("SteamUser")))
+                });
+            }
         }
 
         public void DeleteUser(SteamUser user)
         {
             Users.Remove(user);
-            Storage.DeleteUser(user);
+
+            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
+            string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+
+            if (File.Exists(Path.Combine(UsersPath, fileName)))
+                File.Delete(Path.Combine(UsersPath, fileName));
         }
 
         public string GetSteamPath()
@@ -123,7 +188,7 @@ namespace SteamAccountToolkit.Classes
                     Thread.Sleep(10);
                 }
 
-                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.User} {login.Pass.ToString()}"));
+                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.User.Username} {login.User.Password}"));
 
                 while (IsOnSteamGuard() && !IsOnMainWindow())
                 {

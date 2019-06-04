@@ -12,22 +12,16 @@ namespace SteamAccountToolkit.Classes
     public class SteamUser
     {
         [DataMember]
-        public string User { get; set; }
-
-        [DataMember]
-        public string SteamId64 { get; set; } = string.Empty;
-
-        [DataMember]
-        public string Pass { get; set; }
+        public SteamAuth.UserLogin User { get; set; }
 
         [DataMember]
         public string AuthKey { get; set; } = string.Empty;
 
-        public SteamAuth.SteamGuardAccount SteamGuard => new SteamAuth.SteamGuardAccount { SharedSecret = AuthKey.ToString() };
+        public SteamAuth.SteamGuardAccount SteamGuard { get; private set; }
 
         public string SteamGuardCode => SteamGuard.GenerateSteamGuardCode();
 
-        public string ProfileUrl => SteamId64 == string.Empty ? string.Empty : $"https://steamcommunity.com/profiles/{SteamId64}";
+        public string ProfileUrl => User.SteamID == 0 ? string.Empty : $"https://steamcommunity.com/profiles/{User.SteamID}";
 
         private HtmlDocument _profileDocument;
 
@@ -49,8 +43,8 @@ namespace SteamAccountToolkit.Classes
             {
                 if (_profileDocument == null)
                     Initialize();
-                if (SteamId64 == string.Empty)
-                    _personaName = User;
+                if (User.SteamID == 0)
+                    _personaName = User.Username;
                 else
                     _personaName = _profileDocument.DocumentNode.Descendants().Where(n => n.HasClass("actual_persona_name")).First().GetDirectInnerText();
                 return _personaName;
@@ -73,7 +67,7 @@ namespace SteamAccountToolkit.Classes
         public void UpdateImage()
         {
             _profileImage = new BitmapImage();
-            if (SteamId64 == string.Empty)
+            if (User.SteamID == 0)
             {
                 _profileImage.BeginInit();
                 _profileImage.UriSource = new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
@@ -91,7 +85,34 @@ namespace SteamAccountToolkit.Classes
 
         public void Initialize()
         {
+            SteamGuard = new SteamAuth.SteamGuardAccount { SharedSecret = AuthKey.ToString() };
+            GetUserInfos();
             _profileDocument = new HtmlWeb().Load(new Uri(ProfileUrl));
+        }
+
+        public void GetUserInfos()
+        {
+            if (User.DoLogin() == SteamAuth.LoginResult.Need2FA)
+            {
+                User.TwoFactorCode = SteamGuardCode;
+                var res = User.DoLogin();
+                if (res == SteamAuth.LoginResult.LoginOkay)
+                {
+                    User.SteamID = User.Session.SteamID;
+                    SteamGuard.Session = User.Session;
+                }
+                else
+                    throw new Exception($"Login Error: {res}");
+
+                User.TwoFactorCode = "";
+                System.Diagnostics.Debugger.Break();
+            }
+        }
+
+        public SteamUser()
+        {
+            User = new SteamAuth.UserLogin("", "");
+            Initialize();
         }
     }
 }

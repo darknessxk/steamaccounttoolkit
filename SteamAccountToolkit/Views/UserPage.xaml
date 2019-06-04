@@ -14,13 +14,13 @@
             <Image HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" Source="{Binding User.ProfileImage}" />
             <GroupBox Header="Steam Guard" HorizontalAlignment="Left" Height="100" Margin="605,10,0,0" VerticalAlignment="Top" Width="185">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBox Text="{Binding SteamGuard}" TextAlignment="Center" Width="80">
+                    <Label Content="{Binding SteamGuard}" HorizontalAlignment="Center" Width="80">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseLeftButtonDown">
                                 <prism:InvokeCommandAction Command="{Binding CopySteamGuardCommand}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </Label>
                     <ProgressBar Margin="0, 2, 0, 0" Maximum="{Binding SteamGuardUpdateInterval}" Value="{Binding ThreadTickCount}" />
                 </StackPanel>
             </GroupBox>
@@ -34,8 +34,8 @@
             <GroupBox Header="User Info" HorizontalAlignment="Left" Height="305" Margin="215,10,0,0" VerticalAlignment="Top" Width="385">
                 <WrapPanel Orientation="Vertical">
                     <Label ContentStringFormat="Persona: {0}" Content="{Binding User.PersonaName}" />
-                    <Label ContentStringFormat="Profile URL: profiles/{0}" Content="{Binding User.SteamId64}" />
-                    <Label ContentStringFormat="SteamID64: {0}" Content="{Binding User.SteamId64}" />
+                    <Label ContentStringFormat="Profile URL: profiles/{0}" Content="{Binding User.User.SteamID}" />
+                    <Label ContentStringFormat="SteamID64: {0}" Content="{Binding User.User.SteamID}" />
                     <Label ContentStringFormat="VAC Status: {0}" Content="" />
                     <Label ContentStringFormat="Trade Status: {0}" Content="" />
                 </WrapPanel>
