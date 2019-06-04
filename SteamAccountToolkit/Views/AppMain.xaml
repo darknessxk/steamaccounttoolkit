@@ -30,13 +30,8 @@
     </i:Interaction.Triggers>
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
-            <Button Margin="2" Command="{Binding NavigateCommand}" CommandParameter="UsersList">
-                <Label Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}"/>
-            </Button>
-
-            <Button Margin="2">
-                <Label Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}"/>
-            </Button>
+            <Button Margin="2" Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding NavigateCommand}" CommandParameter="UsersList" />
+            <Button Margin="2" Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding NavigateCommand}" CommandParameter="SettingsPage" />
         </StackPanel>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" Margin="5" />
     </DockPanel>

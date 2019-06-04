@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="SteamAccountToolkit.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:SteamAccountToolkit"
+             xmlns:sys="clr-namespace:System"
+             xmlns:prism="http://prismlibrary.com/"        
+             Height="450" Width="800" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared" 
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel>
+            <StackPanel Margin="10" Orientation="Horizontal" DockPanel.Dock="Top">
+                <Button Content="Save" />
+            </StackPanel>
+
+            <Grid Margin="10">
+                <Label HorizontalContentAlignment="Right" ContentStringFormat="Version {0}" Content="{x:Static local:Globals.Version}" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                <GroupBox Header="Theme Options" HorizontalAlignment="Left" Height="252" Margin="10,10,0,0" VerticalAlignment="Top" Width="200">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Label Content="Theme Base Color" />
+                        <ComboBox ItemsSource="{Binding PrimarySwatchesColors}" SelectedItem="{Binding CurrentPrimary, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Label Content="Theme Accent Color" />
+                        <ComboBox ItemsSource="{Binding AccentSwatchesColors}" SelectedItem="{Binding CurrentAccent, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Label Content="Color Mode" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Dark" Command="{Binding SetColorDarkModeCommand}" />
+                            <Button Content="Light" Command="{Binding SetColorLightModeCommand}"  />
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

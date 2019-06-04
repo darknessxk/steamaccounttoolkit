@@ -13,16 +13,16 @@ namespace SteamAccountToolkit.Classes
         public bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;
         public bool IsOnSteamGuard() => GetSteamLoginWindow() != IntPtr.Zero;
         public bool IsOnLogin() => GetSteamLoginWindow() != IntPtr.Zero;
-        private Storage Storage { get; } = new Storage();
+        private Storage Storage { get; }
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
 
         public bool IsLoading { get; set; } = true;
         public bool IsPathPending => string.IsNullOrEmpty(GetSteamPath());
 
-        public Steam()
+        public Steam(Storage storage)
         {
-            
+            Storage = storage;
         }
 
         public void Initialize()

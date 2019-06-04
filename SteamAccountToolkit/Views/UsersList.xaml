@@ -13,9 +13,7 @@
     </UserControl.Resources>
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
-            <Button>
-                <Label Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}"/>
-            </Button>
+            <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoToAddUserCommand}" />
         </StackPanel>
         <ListView BorderThickness="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}" BorderBrush="#898C3CFF">
             <ListView.ItemsPanel>
