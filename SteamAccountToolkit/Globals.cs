@@ -4,11 +4,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace SteamAccountToolkit
 {
     public static class Globals
     {
+        public static BitmapImage DefaultImage;
+
         public static string Version { get; } = "0.02";
         public static Classes.Storage Storage { get; } = new Classes.Storage();
         public static Classes.Steam Steam { get; } = new Classes.Steam(Storage);

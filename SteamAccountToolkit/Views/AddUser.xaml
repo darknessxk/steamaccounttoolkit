@@ -7,9 +7,9 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="300">
         <Label Content="Add New Steam User" HorizontalAlignment="Center" FontSize="24" Margin="15"/>
         <Label Content="Username*"/>
-        <TextBox Text="{Binding User.User.Username, Mode=TwoWay}" />
+        <TextBox Text="{Binding User.Username, Mode=TwoWay}" />
         <Label Content="Password*"/>
-        <TextBox Text="{Binding User.User.Password, Mode=TwoWay}" />
+        <TextBox Text="{Binding User.Password, Mode=TwoWay}" />
         <Label Content="Steam Guard Shared Key"/>
         <TextBox Text="{Binding User.AuthKey, Mode=TwoWay}" />
         <Button Margin="10" Content="Save" Command="{Binding AddUserCommand}" />

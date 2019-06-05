@@ -9,13 +9,19 @@
              prism:ViewModelLocator.AutoWireViewModel="True" 
              Height="450" Width="800">
     <UserControl.Resources>
-        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- you only need bring this resource in if you want to specify the circular style statically -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
+    
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoToAddUserCommand}" />
         </StackPanel>
-        <ListView BorderThickness="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}" BorderBrush="#898C3CFF">
+        <ListView BorderThickness="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="#898C3CFF" ItemsSource="{x:Static local:Globals.Users}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />
@@ -31,9 +37,53 @@
                         </i:Interaction.Triggers>
 
                         <DockPanel>
-                            <Image DockPanel.Dock="Top" Source="{Binding ProfileImage}" />
+                            <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True">
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignCircularProgressBar}">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Setter Property="Margin" Value="0, 25, 0, 0" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Width" Value="60" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInitialized}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+                            
+                            <Image DockPanel.Dock="Top" Source="{Binding ProfileImage}">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInitialized}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
                             <Grid DockPanel.Dock="Bottom">
-                                <Label VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
+                                <Label MaxWidth="110" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
+
+                                <Button Content="Submit Request">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <Setter Property="Command" Value="" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RequestingLoginData}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                    <Setter Property="Command" Value="{Binding SubmitInfoCommand}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </Grid>
                         </DockPanel>
                     </Border>

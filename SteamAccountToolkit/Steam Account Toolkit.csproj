@@ -105,6 +105,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="Classes\Utils.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="ViewModels\AddUserViewModel.cs" />
     <Compile Include="ViewModels\AppMainViewModel.cs" />

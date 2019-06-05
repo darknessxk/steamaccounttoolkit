@@ -29,6 +29,9 @@ namespace SteamAccountToolkit.ViewModels
 
         private void ViewUser(Classes.SteamUser user)
         {
+            if (!user.IsInitialized)
+                return;
+            
             NavigationParameters nav = new NavigationParameters();
             nav.Add("user", user);
 

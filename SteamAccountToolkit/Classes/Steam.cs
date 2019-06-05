@@ -33,6 +33,9 @@ namespace SteamAccountToolkit.Classes
         public Steam(Storage storage)
         {
             Storage = storage;
+            
+            if (!Directory.Exists(UsersPath))
+                Directory.CreateDirectory(UsersPath);
         }
 
         public void Initialize()
@@ -61,15 +64,12 @@ namespace SteamAccountToolkit.Classes
                 {
                     IFormatter f = new BinaryFormatter();
                     object b = null;
-                    if (Properties.Settings.Default.Encrypt)
-                        using (CryptoStream cs = new CryptoStream(ms, Storage.Decryptor, CryptoStreamMode.Write))
-                            b = f.Deserialize(cs);
-                    else
-                        b = f.Deserialize(ms);
 
-                    if (b is SteamUser)
+                    b = f.Deserialize(ms);
+
+                    if (b is SteamUser.SerializableSteamUser)
                     {
-                        var user = b as SteamUser;
+                        var user = new SteamUser(b as SteamUser.SerializableSteamUser);
 
                         user.Initialize();
                         user.UpdateImage();
@@ -84,7 +84,7 @@ namespace SteamAccountToolkit.Classes
             user.Initialize();
             Users.Add(user);
 
-            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
+            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username.ToString()));
             string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
             DeleteUser(user); // in case of a possible updating action lol
@@ -93,11 +93,7 @@ namespace SteamAccountToolkit.Classes
             {
                 IFormatter f = new BinaryFormatter();
 
-                if (Properties.Settings.Default.Encrypt)
-                    using (CryptoStream cs = new CryptoStream(ms, Storage.Encryptor, CryptoStreamMode.Write))
-                        f.Serialize(cs, user);
-                else
-                    f.Serialize(ms, user);
+                f.Serialize(ms, user.User);
 
 
                 Storage.Save(Path.Combine(UsersPath, fileName), new Storage.DataPack(Storage.FileHashAlgo)
@@ -112,7 +108,7 @@ namespace SteamAccountToolkit.Classes
         {
             Users.Remove(user);
 
-            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.User.ToString()));
+            byte[] hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username.ToString()));
             string fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
             if (File.Exists(Path.Combine(UsersPath, fileName)))
@@ -188,7 +184,7 @@ namespace SteamAccountToolkit.Classes
                     Thread.Sleep(10);
                 }
 
-                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.User.Username} {login.User.Password}"));
+                Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.Username} {login.Password}"));
 
                 while (IsOnSteamGuard() && !IsOnMainWindow())
                 {

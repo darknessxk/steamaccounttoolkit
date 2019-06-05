@@ -91,7 +91,7 @@ namespace SteamAccountToolkit.ViewModels
 
         private void CopySteamGuard()
         {
-            System.Windows.Clipboard.SetText(User.SteamGuardCode);
+            System.Windows.Clipboard.SetText(SteamGuard);
         }
 
         private void EditUser()
@@ -114,7 +114,7 @@ namespace SteamAccountToolkit.ViewModels
         {
             var user = navigationContext.Parameters["user"] as Classes.SteamUser;
             if (user != null)
-                return User != null && User.User == user.User;
+                return User != null && User.Username == user.Username;
             return true;
         }
 

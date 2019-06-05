@@ -34,8 +34,8 @@
             <GroupBox Header="User Info" HorizontalAlignment="Left" Height="305" Margin="215,10,0,0" VerticalAlignment="Top" Width="385">
                 <WrapPanel Orientation="Vertical">
                     <Label ContentStringFormat="Persona: {0}" Content="{Binding User.PersonaName}" />
-                    <Label ContentStringFormat="Profile URL: profiles/{0}" Content="{Binding User.User.SteamID}" />
-                    <Label ContentStringFormat="SteamID64: {0}" Content="{Binding User.User.SteamID}" />
+                    <Label ContentStringFormat="Profile URL: profiles/{0}" Content="{Binding User.SteamID}" />
+                    <Label ContentStringFormat="SteamID64: {0}" Content="{Binding User.SteamID}" />
                     <Label ContentStringFormat="VAC Status: {0}" Content="" />
                     <Label ContentStringFormat="Trade Status: {0}" Content="" />
                 </WrapPanel>

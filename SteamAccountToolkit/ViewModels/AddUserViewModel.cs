@@ -22,6 +22,7 @@ namespace SteamAccountToolkit.ViewModels
         public AddUserViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
+            _user = new Classes.SteamUser();
 
             AddUserCommand = new DelegateCommand(AddUser);
             CancelCommand = new DelegateCommand(Cancel);

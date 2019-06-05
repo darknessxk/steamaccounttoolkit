@@ -22,53 +22,5 @@ namespace SteamAccountToolkit.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Muhkeynibbas")]
-        public string RandomKey_DEV {
-            get {
-                return ((string)(this["RandomKey_DEV"]));
-            }
-            set {
-                this["RandomKey_DEV"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1234567878")]
-        public string UserEncryptionKey_DEV {
-            get {
-                return ((string)(this["UserEncryptionKey_DEV"]));
-            }
-            set {
-                this["UserEncryptionKey_DEV"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Encrypt {
-            get {
-                return ((bool)(this["Encrypt"]));
-            }
-            set {
-                this["Encrypt"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SteamPath {
-            get {
-                return ((string)(this["SteamPath"]));
-            }
-            set {
-                this["SteamPath"] = value;
-            }
-        }
     }
 }

@@ -2,6 +2,7 @@
 using Prism.Unity;
 using System.Windows;
 using Prism.Ioc;
+using System;
 
 namespace SteamAccountToolkit
 {
@@ -19,6 +20,11 @@ namespace SteamAccountToolkit
         {
             base.OnStartup(e);
             Globals.IsAppRunning = true;
+
+            Globals.DefaultImage = new System.Windows.Media.Imaging.BitmapImage();
+            Globals.DefaultImage.BeginInit();
+            Globals.DefaultImage.UriSource = new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
+            Globals.DefaultImage.EndInit();
         }
 
         protected override void OnExit(ExitEventArgs e)
