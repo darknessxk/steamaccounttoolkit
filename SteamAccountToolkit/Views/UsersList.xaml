@@ -3,16 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:System="clr-namespace:System;assembly=mscorlib" 
              xmlns:local="clr-namespace:SteamAccountToolkit"
+             xmlns:classes="clr-namespace:SteamAccountToolkit.Classes"
              x:Class="SteamAccountToolkit.Views.UsersList"
              prism:ViewModelLocator.AutoWireViewModel="True" 
-             Height="450" Width="800">
+             Height="380" Width="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- you only need bring this resource in if you want to specify the circular style statically -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -21,7 +22,7 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoToAddUserCommand}" />
         </StackPanel>
-        <ListView BorderThickness="2" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="#898C3CFF" ItemsSource="{x:Static local:Globals.Users}">
+        <ListView SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />
@@ -29,7 +30,7 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#FF755B83" BorderThickness="2" Width="130" Height="160">
+                    <Border BorderThickness="2" Width="130" Height="160">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseLeftButtonDown">
                                 <prism:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ViewUserCommand}" CommandParameter="{Binding .}"/>
@@ -40,10 +41,8 @@
                             <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True">
                                 <ProgressBar.Style>
                                     <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignCircularProgressBar}">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                        <Setter Property="Margin" Value="0, 25, 0, 0" />
-                                        <Setter Property="HorizontalAlignment" Value="Center" />
-                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Setter Property="Margin" Value="0, 20, 0, 55" />
                                         <Setter Property="Width" Value="60" />
 
                                         <Style.Triggers>
@@ -61,29 +60,32 @@
                                         <Setter Property="Visibility" Value="Visible" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsInitialized}" Value="False">
-                                                <Setter Property="Visibility" Value="Hidden" />
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Image.Style>
                             </Image>
                             <Grid DockPanel.Dock="Bottom">
-                                <Label MaxWidth="110" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
+                                <StackPanel Orientation="Vertical">
+                                    <Label MaxWidth="110" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding PersonaName}" />
 
-                                <Button Content="Submit Request">
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Setter Property="Visibility" Value="Hidden" />
-                                            <Setter Property="Command" Value="" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding RequestingLoginData}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                    <Setter Property="Command" Value="{Binding SubmitInfoCommand}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
+                                    <Button Content="Submit">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Setter Property="Command" Value="" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RequestingLoginData}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.SubmitInfoCommand}" />
+                                                        <Setter Property="CommandParameter" Value="{Binding .}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
                             </Grid>
                         </DockPanel>
                     </Border>

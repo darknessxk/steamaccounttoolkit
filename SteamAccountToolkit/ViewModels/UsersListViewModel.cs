@@ -1,10 +1,6 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -13,6 +9,7 @@ namespace SteamAccountToolkit.ViewModels
         private IRegionManager _regionManager;
         public DelegateCommand<Classes.SteamUser> ViewUserCommand { get; private set; }
         public DelegateCommand GoToAddUserCommand { get; private set; }
+        public DelegateCommand<Classes.SteamUser> SubmitInfoCommand { get; private set; }
 
         public UsersListViewModel(IRegionManager regionManager)
         {
@@ -20,6 +17,17 @@ namespace SteamAccountToolkit.ViewModels
 
             ViewUserCommand = new DelegateCommand<Classes.SteamUser>(ViewUser);
             GoToAddUserCommand = new DelegateCommand(GoToAddUser);
+            SubmitInfoCommand = new DelegateCommand<Classes.SteamUser>(SubmitInfo);
+        }
+
+        private void SubmitInfo(Classes.SteamUser user)
+        {
+            var nav = new NavigationParameters
+            {
+                { "user", user }
+            };
+
+            _regionManager.RequestNavigate("ContentRegion", "CaptchaSubmitPage", nav);
         }
 
         private void GoToAddUser()
@@ -31,9 +39,11 @@ namespace SteamAccountToolkit.ViewModels
         {
             if (!user.IsInitialized)
                 return;
-            
-            NavigationParameters nav = new NavigationParameters();
-            nav.Add("user", user);
+
+            var nav = new NavigationParameters
+            {
+                { "user", user }
+            };
 
             _regionManager.RequestNavigate("ContentRegion", "UserPage", nav);
         }

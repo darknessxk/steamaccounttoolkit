@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace SteamAccountToolkit.Classes
@@ -37,15 +33,15 @@ namespace SteamAccountToolkit.Classes
 
         public static byte[] RandomBytes(int count, int rounds = 4)
         {
-            byte[] b = new byte[count];
+            var b = new byte[count];
 
             for (var n = 0; n < count; n++)
             {
-                using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+                using (var rng = new RNGCryptoServiceProvider())
                 {
                     for (var r = 0; r < rounds; r++)
                     {
-                        byte[] temp = new byte[1];
+                        var temp = new byte[1];
                         rng.GetBytes(temp);
                         b[n] = temp[0];
                     }

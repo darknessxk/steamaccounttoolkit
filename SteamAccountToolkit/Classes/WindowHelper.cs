@@ -27,7 +27,7 @@ namespace SteamAccountToolkit.Classes
                     winList.Add(win);
                 }
 
-                return NtApi.EnumWindows_ContinueEnumerating;
+                return NtApi.EnumWindowsContinueEnumerating;
             }, IntPtr.Zero);
 
             return winList ?? Enumerable.Empty<WinHandle>();
@@ -38,7 +38,7 @@ namespace SteamAccountToolkit.Classes
             if (pred == null)
                 throw new ArgumentNullException(nameof(pred));
 
-            WinHandle ret = WinHandle.Invalid;
+            var ret = WinHandle.Invalid;
 
             NtApi.EnumWindows((ptr, lp) =>
             {
@@ -46,9 +46,9 @@ namespace SteamAccountToolkit.Classes
                 if (pred.Invoke(win))
                 {
                     ret = win;
-                    return NtApi.EnumWindows_StopEnumerating;
+                    return NtApi.EnumWindowsStopEnumerating;
                 }
-                return NtApi.EnumWindows_ContinueEnumerating;
+                return NtApi.EnumWindowsContinueEnumerating;
             }, IntPtr.Zero);
 
             return ret;
@@ -58,11 +58,11 @@ namespace SteamAccountToolkit.Classes
 
         public static string GetWindowText(this WinHandle win)
         {
-            int size = NtApi.GetWindowTextLength(win.Handle);
+            var size = NtApi.GetWindowTextLength(win.Handle);
 
             if(size > 0)
             {
-                StringBuilder sb = new StringBuilder(size + 1); // +1 [size+1] = '\0';
+                var sb = new StringBuilder(size + 1); // +1 [size+1] = '\0';
                 NtApi.GetWindowText(win.Handle, sb, sb.Capacity);
                 return sb.ToString();
             }
@@ -72,8 +72,8 @@ namespace SteamAccountToolkit.Classes
 
         public static string GetClassName(this WinHandle win)
         {
-            int limit = 255;
-            int aSize = 0;
+            var limit = 255;
+            var aSize = 0;
             StringBuilder sb;
             do
             {
@@ -88,7 +88,7 @@ namespace SteamAccountToolkit.Classes
         public static WinHandle SendKeys(this WinHandle win, string text, bool sendCharbyChar = false, int interval = 10)
         {
             if(sendCharbyChar)
-                foreach (char c in text)
+                foreach (var c in text)
                 {
                     System.Threading.Thread.Sleep(interval);
                     win.SendKey(c);

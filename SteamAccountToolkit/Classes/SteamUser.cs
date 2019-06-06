@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using HtmlAgilityPack;
 using Prism.Mvvm;
+using SteamAuth;
 
 namespace SteamAccountToolkit.Classes
 {
@@ -26,10 +26,19 @@ namespace SteamAccountToolkit.Classes
             public string AuthKey;
 
             [DataMember(EmitDefaultValue = true, IsRequired = false, Name = "SteamID", Order = 3)]
-            public string SteamID;
+            public string SteamId;
         }
 
         public SerializableSteamUser User { get; } = new SerializableSteamUser();
+
+        private DateTime _lastSaveTime = DateTime.Now;
+
+        private void Save()
+        {
+            if (DateTime.Now <= _lastSaveTime.AddSeconds(1)) return;
+            _lastSaveTime = DateTime.Now;
+            Globals.Steam.SaveUser(this);
+        }
 
         public string Username
         {
@@ -54,17 +63,15 @@ namespace SteamAccountToolkit.Classes
             }
         }
 
-        public string SteamID
+        public string SteamId
         {
-            get => User.SteamID;
-            set => SetProperty(ref User.SteamID, value);
+            get => User.SteamId;
+            set => SetProperty(ref User.SteamId, value);
         }
 
-        public SteamAuth.SteamGuardAccount SteamGuard;
+        public SteamGuardAccount SteamGuard;
 
-        public string SteamGuardCode => SteamGuard.GenerateSteamGuardCode();
-
-        public string ProfileUrl => string.IsNullOrEmpty(SteamID) ? string.Empty : $"https://steamcommunity.com/profiles/{SteamID}";
+        public string ProfileUrl => string.IsNullOrEmpty(SteamId) ? string.Empty : $"https://steamcommunity.com/profiles/{SteamId}";
 
         private HtmlDocument _profileDocument;
 
@@ -81,7 +88,7 @@ namespace SteamAccountToolkit.Classes
             private set => SetProperty(ref _personaName, value);
         }
 
-        private bool _initialized = false;
+        private bool _initialized;
         public bool IsInitialized
         {
             get => _initialized;
@@ -95,12 +102,11 @@ namespace SteamAccountToolkit.Classes
             private set => SetProperty(ref _profileIconUrl, value);
         }
 
-        private byte[] ProfileImageCache = null;
+        private byte[] _profileImageCache;
 
         public SteamUser(SerializableSteamUser u)
         {
             User = u;
-            Initialize();
         }
 
         public SteamUser()
@@ -111,15 +117,13 @@ namespace SteamAccountToolkit.Classes
         private BitmapImage _userImage;
         public void UpdateImage()
         {
-            if (!string.IsNullOrEmpty(SteamID) && ProfileImageCache != null)
+            if (!string.IsNullOrEmpty(SteamId) && _profileImageCache != null)
             {
                 if (_userImage == null)
                 {
-                    _userImage = new BitmapImage();
-                    _userImage.CacheOption = BitmapCacheOption.OnDemand;
+                    _userImage = new BitmapImage {CacheOption = BitmapCacheOption.OnDemand};
                     _userImage.BeginInit();
-                    MemoryStream ms = new MemoryStream(ProfileImageCache);
-                    _userImage.StreamSource = ms;
+                    _userImage.StreamSource = new MemoryStream(_profileImageCache);
                     _userImage.EndInit();
                 }
 
@@ -131,80 +135,100 @@ namespace SteamAccountToolkit.Classes
 
         }
 
-        private bool _requestingData = false;
+        private bool _requestingData;
         public bool RequestingLoginData
         {
             get => _requestingData;
             set => SetProperty(ref _requestingData, value);
         }
 
-        public SteamAuth.LoginResult LoginResult { get; private set; }
+        public LoginResult LoginResult { get; private set; }
+
+        public UserLogin AuthUser { get; private set; }
+
+        public void Instantiate()
+        {
+            if (!string.IsNullOrEmpty(ProfileUrl))
+                _profileDocument = new HtmlWeb().Load(new Uri(ProfileUrl));
+
+            if (string.IsNullOrEmpty(ProfileIconUrl))
+                ProfileIconUrl = _profileDocument.DocumentNode.Descendants().First(n => n.HasClass("playerAvatarAutoSizeInner")).FirstChild.GetAttributeValue("src", null);
+
+            if (!string.IsNullOrEmpty(ProfileIconUrl))
+                _profileImageCache = new WebClient().DownloadData(ProfileIconUrl);
+
+            PersonaName = string.IsNullOrEmpty(SteamId) ? Username : _profileDocument.DocumentNode.Descendants().First(n => n.HasClass("actual_persona_name")).GetDirectInnerText();
+
+            Utils.InvokeDispatcherIfRequired(UpdateImage);
+
+            IsInitialized = true;
+        }
 
         public void Initialize()
         {
-            SteamGuard = new SteamAuth.SteamGuardAccount { SharedSecret = AuthKey.ToString() };
-            
-            if(string.IsNullOrEmpty(SteamID))
+            SteamGuard = new SteamGuardAccount { SharedSecret = AuthKey };
+
+            if (string.IsNullOrEmpty(SteamId))
             {
-                var User = new SteamAuth.UserLogin(Username, Password);
+                AuthUser = new UserLogin(Username, Password);
                 PersonaName = "Loading User";
                 Task.Run(() =>
                 {
-                    SteamAuth.LoginResult res;
-                    while ((res = User.DoLogin()) != SteamAuth.LoginResult.LoginOkay )
+                    LoginResult res;
+                    while ((res = AuthUser.DoLogin()) != LoginResult.LoginOkay)
                     {
                         LoginResult = res;
                         switch (res)
                         {
-                            case SteamAuth.LoginResult.GeneralFailure:
-                            case SteamAuth.LoginResult.BadRSA:
-                            case SteamAuth.LoginResult.BadCredentials:
-                            case SteamAuth.LoginResult.TooManyFailedLogins:
-                                Console.WriteLine($"Error {res}");
-                                return;
-                            case SteamAuth.LoginResult.NeedEmail:
+                            case LoginResult.GeneralFailure:
+                            case LoginResult.BadRSA:
+                            case LoginResult.BadCredentials:
+                            case LoginResult.TooManyFailedLogins:
+                                Console.WriteLine($@"Error {res}");
+                                RequestingLoginData = false;
+                                return false;
+                            case LoginResult.NeedEmail:
                                 PersonaName = "Email code required";
                                 RequestingLoginData = true;
-                                while (string.IsNullOrEmpty(User.EmailCode))
+                                while (string.IsNullOrEmpty(AuthUser.EmailCode))
                                     System.Threading.Thread.Sleep(1000);
                                 break;
-                            case SteamAuth.LoginResult.NeedCaptcha:
+                            case LoginResult.NeedCaptcha:
                                 PersonaName = "Captcha required";
                                 RequestingLoginData = true;
-                                while (string.IsNullOrEmpty(User.CaptchaText))
+                                while (string.IsNullOrEmpty(AuthUser.CaptchaText))
                                     System.Threading.Thread.Sleep(1000);
                                 break;
-                            case SteamAuth.LoginResult.Need2FA:
-                                User.TwoFactorCode = SteamGuardCode;
+                            case LoginResult.Need2FA:
+                                AuthUser.TwoFactorCode = SteamGuard.GenerateSteamGuardCode();
                                 break;
+                            case LoginResult.LoginOkay:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
                     }
-                    if (res == SteamAuth.LoginResult.LoginOkay)
+
+                    if (res == LoginResult.LoginOkay)
                     {
-                        User.SteamID = User.Session.SteamID;
-                        SteamID = User.SteamID.ToString();
-                        SteamGuard.Session = User.Session;
+                        User.SteamId = AuthUser.Session.SteamID.ToString();
+                        SteamId = User.SteamId;
+                        SteamGuard.Session = AuthUser.Session;
+                        Save();
                     }
-                }).ContinueWith(t => {
-                    if(!string.IsNullOrEmpty(ProfileUrl))
-                        _profileDocument = new HtmlWeb().Load(new Uri(ProfileUrl));
 
-                    if (!string.IsNullOrEmpty(ProfileIconUrl))
-                        ProfileIconUrl = _profileDocument.DocumentNode.Descendants().Where(n => n.HasClass("playerAvatarAutoSizeInner")).First().FirstChild.GetAttributeValue("src", null);
-
-                    if(!string.IsNullOrEmpty(ProfileIconUrl))
-                        ProfileImageCache = new WebClient().DownloadData(ProfileIconUrl);
-
-                    if (string.IsNullOrEmpty(SteamID))
-                        PersonaName = Username;
+                    RequestingLoginData = false;
+                    return true;
+                }).ContinueWith(t =>
+                {
+                    if (t.Result)
+                        Instantiate();
                     else
-                        PersonaName = _profileDocument.DocumentNode.Descendants().Where(n => n.HasClass("actual_persona_name")).First().GetDirectInnerText();
-
-                    Utils.InvokeDispatcherIfRequired(UpdateImage);
-
-                    IsInitialized = true;
+                        PersonaName = "Error";
                 });
             }
+            else
+                Task.Run(Instantiate);
         }
     }
 }

@@ -3,7 +3,6 @@ using Prism.Mvvm;
 using Prism.Regions;
 using System;
 using System.Threading;
-using System.Linq;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -46,15 +45,15 @@ namespace SteamAccountToolkit.ViewModels
             _steamGuardTh.Start();
         }
 
-        private int IntervalPerTick = 1000; //ms
-        private int _ThreadTickCount;
+        private int _intervalPerTick = 1000; //ms
+        private int _threadTickCount;
         public int ThreadTickCount
         {
-            get => _ThreadTickCount;
-            set => SetProperty(ref _ThreadTickCount, value);
+            get => _threadTickCount;
+            set => SetProperty(ref _threadTickCount, value);
         }
 
-        private int _steamGuardUpdateInterval = 10;
+        private int _steamGuardUpdateInterval = 30;
         public int SteamGuardUpdateInterval
         {
             get => _steamGuardUpdateInterval;
@@ -70,15 +69,15 @@ namespace SteamAccountToolkit.ViewModels
                 else
                 {
                     if (string.IsNullOrEmpty(SteamGuard))
-                        SteamGuard = User.SteamGuard.GenerateSteamGuardCodeForTime(DateTime.Now.AddSeconds(SteamGuardUpdateInterval / 1000).Ticks);
+                        SteamGuard = User.SteamGuard.GenerateSteamGuardCode();
 
                     if (SteamGuardUpdateInterval < ThreadTickCount)
                     {
-                        SteamGuard = User.SteamGuard.GenerateSteamGuardCodeForTime(DateTime.Now.AddSeconds(SteamGuardUpdateInterval / 1000).Ticks);
+                        SteamGuard = SteamGuard = User.SteamGuard.GenerateSteamGuardCode();
                         ThreadTickCount = 0;
                     }
 
-                    Thread.Sleep(IntervalPerTick);
+                    Thread.Sleep(_intervalPerTick);
                     ThreadTickCount = ThreadTickCount + 1;
                 }
             }

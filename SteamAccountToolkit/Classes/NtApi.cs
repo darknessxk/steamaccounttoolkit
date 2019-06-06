@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SteamAccountToolkit.Classes
 {
     public static class NtApi
     {
-        public const bool EnumWindows_ContinueEnumerating = true;
-        public const bool EnumWindows_StopEnumerating = false;
+        public const bool EnumWindowsContinueEnumerating = true;
+        public const bool EnumWindowsStopEnumerating = false;
 
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hwnd);

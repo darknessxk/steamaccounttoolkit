@@ -1,9 +1,7 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -18,8 +16,8 @@ namespace SteamAccountToolkit.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        public DelegateCommand<string> NavigateCommand { get; private set; }
-        public DelegateCommand LoadedCommand { get; private set; }
+        public DelegateCommand<string> NavigateCommand { get; }
+        public DelegateCommand LoadedCommand { get; }
 
         public AppMainViewModel(IRegionManager regionManager)
         {
@@ -36,7 +34,7 @@ namespace SteamAccountToolkit.ViewModels
 
         private void Navigate(string path)
         {
-            if (path != null && path != string.Empty)
+            if (!string.IsNullOrEmpty(path))
                 _regionManager.RequestNavigate("ContentRegion", path);
         }
     }
