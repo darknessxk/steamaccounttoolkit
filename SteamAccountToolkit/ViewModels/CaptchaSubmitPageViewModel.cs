@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -24,8 +25,8 @@ namespace SteamAccountToolkit.ViewModels
             set => SetProperty(ref _captchaImage, value);
         }
 
-        private Classes.SteamUser _user;
-        public Classes.SteamUser User
+        private SteamUser _user;
+        public SteamUser User
         {
             get => _user;
             set
@@ -33,11 +34,8 @@ namespace SteamAccountToolkit.ViewModels
                 SetProperty(ref _user, value);
                 var tmp = new BitmapImage();
 
-                Task.Run(() =>
-                {
-                    return new WebClient().DownloadData($"https://steamcommunity.com/public/captcha.php?gid={value.AuthUser.CaptchaGID}");
-                }).ContinueWith(t => {
-                    Classes.Utils.InvokeDispatcherIfRequired(() =>
+                Task.Run(() => new WebClient().DownloadData($"https://steamcommunity.com/public/captcha.php?gid={value.AuthUser.CaptchaGID}")).ContinueWith(t => {
+                    Utils.InvokeDispatcherIfRequired(() =>
                     {
                         tmp.BeginInit();
                         tmp.StreamSource = new MemoryStream(t.Result);
@@ -49,8 +47,8 @@ namespace SteamAccountToolkit.ViewModels
             }
         }
 
-        public DelegateCommand SubmitCaptchaCommand { get; private set; }
-        private IRegionManager _regionManager;
+        public DelegateCommand SubmitCaptchaCommand { get; }
+        private readonly IRegionManager _regionManager;
 
         public CaptchaSubmitPageViewModel(IRegionManager regionManager)
         {
@@ -67,16 +65,13 @@ namespace SteamAccountToolkit.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var user = navigationContext.Parameters["user"] as Classes.SteamUser;
-            if (user != null)
+            if (navigationContext.Parameters["user"] is SteamUser user)
                 User = user;
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-
-            var user = navigationContext.Parameters["user"] as Classes.SteamUser;
-            if (user != null)
+            if (navigationContext.Parameters["user"] is SteamUser user)
                 return User != null && User.Username == user.Username;
             return true;
         }

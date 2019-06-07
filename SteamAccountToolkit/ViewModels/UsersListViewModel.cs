@@ -6,10 +6,10 @@ namespace SteamAccountToolkit.ViewModels
 {
     public class UsersListViewModel : BindableBase
     {
-        private IRegionManager _regionManager;
-        public DelegateCommand<Classes.SteamUser> ViewUserCommand { get; private set; }
-        public DelegateCommand GoToAddUserCommand { get; private set; }
-        public DelegateCommand<Classes.SteamUser> SubmitInfoCommand { get; private set; }
+        private readonly IRegionManager _regionManager;
+        public DelegateCommand<Classes.SteamUser> ViewUserCommand { get; }
+        public DelegateCommand GoToAddUserCommand { get; }
+        public DelegateCommand<Classes.SteamUser> SubmitInfoCommand { get; }
 
         public UsersListViewModel(IRegionManager regionManager)
         {
@@ -27,7 +27,15 @@ namespace SteamAccountToolkit.ViewModels
                 { "user", user }
             };
 
-            _regionManager.RequestNavigate("ContentRegion", "CaptchaSubmitPage", nav);
+            switch (user.RequestType)
+            {
+                case 1:
+                    _regionManager.RequestNavigate("ContentRegion", "EmailCodeSubmitPage", nav);
+                    break;
+                case 2:
+                    _regionManager.RequestNavigate("ContentRegion", "CaptchaSubmitPage", nav);
+                    break;
+            }
         }
 
         private void GoToAddUser()

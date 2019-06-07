@@ -87,11 +87,8 @@
                                                         <Setter Property="CommandParameter" Value="{Binding .}" />
                                                     </DataTrigger>
 
-
-                                                    <DataTrigger Binding="{Binding RequestingLoginData}" Value="True">
+                                                    <DataTrigger Binding="{Binding RequestingLoginData}" Value="False">
                                                         <Setter Property="Visibility" Value="Collapsed" />
-                                                        <Setter Property="Command" Value="" />
-                                                        <Setter Property="IsEnabled" Value="False" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

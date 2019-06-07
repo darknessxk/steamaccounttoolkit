@@ -146,6 +146,8 @@ namespace SteamAccountToolkit.Classes
 
         public UserLogin AuthUser { get; private set; }
 
+        public int RequestType { get; private set; }
+
         public void Instantiate()
         {
             if (!string.IsNullOrEmpty(ProfileUrl))
@@ -189,12 +191,14 @@ namespace SteamAccountToolkit.Classes
                                 return false;
                             case LoginResult.NeedEmail:
                                 PersonaName = "Email code required";
+                                RequestType = 1;
                                 RequestingLoginData = true;
                                 while (string.IsNullOrEmpty(AuthUser.EmailCode))
                                     System.Threading.Thread.Sleep(1000);
                                 break;
                             case LoginResult.NeedCaptcha:
                                 PersonaName = "Captcha required";
+                                RequestType = 2;
                                 RequestingLoginData = true;
                                 while (string.IsNullOrEmpty(AuthUser.CaptchaText))
                                     System.Threading.Thread.Sleep(1000);

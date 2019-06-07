@@ -38,6 +38,7 @@ namespace SteamAccountToolkit
             containerRegistry.RegisterForNavigation<Views.AddUser>("AddUser");
             containerRegistry.RegisterForNavigation<Views.SettingsPage>("SettingsPage");
             containerRegistry.RegisterForNavigation<Views.CaptchaSubmitPage>("CaptchaSubmitPage");
+            containerRegistry.RegisterForNavigation<Views.EmailCodeSubmitPage>("EmailCodeSubmitPage");
         }
     }
 }

@@ -110,6 +110,7 @@
     <Compile Include="ViewModels\AddUserViewModel.cs" />
     <Compile Include="ViewModels\AppMainViewModel.cs" />
     <Compile Include="ViewModels\CaptchaSubmitPageViewModel.cs" />
+    <Compile Include="ViewModels\EmailCodeSubmitPageViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\UsersListViewModel.cs" />
@@ -126,6 +127,9 @@
     <Compile Include="Classes\WindowHelper.cs" />
     <Compile Include="Views\CaptchaSubmitPage.xaml.cs">
       <DependentUpon>CaptchaSubmitPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EmailCodeSubmitPage.xaml.cs">
+      <DependentUpon>EmailCodeSubmitPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -153,6 +157,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\CaptchaSubmitPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EmailCodeSubmitPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -208,6 +216,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="DesignData\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
