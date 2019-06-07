@@ -82,7 +82,7 @@ namespace SteamAccountToolkit.Classes
             var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username));
             var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
-            DeleteUser(user); // in case of a possible updating action lol
+            DeleteUser(user, false); // in case of a possible updating action lol
 
             using (var ms = new MemoryStream())
             {
@@ -101,7 +101,13 @@ namespace SteamAccountToolkit.Classes
 
         public void DeleteUser(SteamUser user)
         {
-            Utils.InvokeDispatcherIfRequired(() => Users.Remove(user));
+            DeleteUser(user, true);
+        }
+
+        public void DeleteUser(SteamUser user, bool deleteFromList)
+        {
+            if(deleteFromList)
+                Utils.InvokeDispatcherIfRequired(() => Users.Remove(user));
 
             var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username.ToString()));
             var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
