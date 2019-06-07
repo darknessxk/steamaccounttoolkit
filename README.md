@@ -12,9 +12,7 @@ This is project focused on my studies routine and livestream on [Twitch.TV](http
 * Steam Auth (NuGet Library)
 
 ## Description
-App created in the intent to manage multiples account with one unique app, that you can accept your trades, get your steam guard codes for any account you have
-
-With the ease of an all in one toolkit
+Created to manage multiples account in a single place you can accept your trades, get your steam guard codes for any account may have
 
 ## Features
 * Automatic Login
