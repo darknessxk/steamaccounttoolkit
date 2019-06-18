@@ -1,17 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using Prism.Ioc;
-using System;
+using SteamAccountToolkit.Views;
 
 namespace SteamAccountToolkit
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     internal partial class App
     {
         protected override Window CreateShell()
         {
-            return Container.Resolve<Views.AppMain>();
+            return Container.Resolve<AppMain>();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -19,9 +21,10 @@ namespace SteamAccountToolkit
             base.OnStartup(e);
             Globals.IsAppRunning = true;
 
-            Globals.DefaultImage = new System.Windows.Media.Imaging.BitmapImage();
+            Globals.DefaultImage = new BitmapImage();
             Globals.DefaultImage.BeginInit();
-            Globals.DefaultImage.UriSource = new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
+            Globals.DefaultImage.UriSource =
+                new Uri("pack://application:,,,/SteamAccountToolkit;component/Assets/user_default.jpg");
             Globals.DefaultImage.EndInit();
         }
 
@@ -33,12 +36,12 @@ namespace SteamAccountToolkit
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterForNavigation<Views.UsersList>("UsersList");
-            containerRegistry.RegisterForNavigation<Views.UserPage>("UserPage");
-            containerRegistry.RegisterForNavigation<Views.AddUser>("AddUser");
-            containerRegistry.RegisterForNavigation<Views.SettingsPage>("SettingsPage");
-            containerRegistry.RegisterForNavigation<Views.CaptchaSubmitPage>("CaptchaSubmitPage");
-            containerRegistry.RegisterForNavigation<Views.EmailCodeSubmitPage>("EmailCodeSubmitPage");
+            containerRegistry.RegisterForNavigation<UsersList>("UsersList");
+            containerRegistry.RegisterForNavigation<UserPage>("UserPage");
+            containerRegistry.RegisterForNavigation<AddUser>("AddUser");
+            containerRegistry.RegisterForNavigation<SettingsPage>("SettingsPage");
+            containerRegistry.RegisterForNavigation<CaptchaSubmitPage>("CaptchaSubmitPage");
+            containerRegistry.RegisterForNavigation<EmailCodeSubmitPage>("EmailCodeSubmitPage");
         }
     }
 }

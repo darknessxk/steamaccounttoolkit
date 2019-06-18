@@ -3,7 +3,7 @@
 namespace SteamAccountToolkit.Views
 {
     /// <summary>
-    /// Interaction logic for UserPage
+    ///     Interaction logic for UserPage
     /// </summary>
     public partial class UserPage : UserControl
     {

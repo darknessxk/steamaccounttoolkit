@@ -1,7 +1,6 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -10,6 +9,14 @@ namespace SteamAccountToolkit.ViewModels
         private readonly IRegionManager _regionManager;
 
         private string _title = "Steam Account Toolkit";
+
+        public AppMainViewModel(IRegionManager regionManager)
+        {
+            _regionManager = regionManager;
+            NavigateCommand = new DelegateCommand<string>(Navigate);
+            LoadedCommand = new DelegateCommand(Loaded);
+        }
+
         public string Title
         {
             get => _title;
@@ -18,13 +25,6 @@ namespace SteamAccountToolkit.ViewModels
 
         public DelegateCommand<string> NavigateCommand { get; }
         public DelegateCommand LoadedCommand { get; }
-
-        public AppMainViewModel(IRegionManager regionManager)
-        {
-            _regionManager = regionManager;
-            NavigateCommand = new DelegateCommand<string>(Navigate);
-            LoadedCommand = new DelegateCommand(Loaded);
-        }
 
         private void Loaded()
         {

@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-    xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared" 
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared"
     x:Class="SteamAccountToolkit.Views.AppMain"
     mc:Ignorable="d"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -18,7 +18,7 @@
     FontFamily="{DynamicResource MaterialDesignFont}"
     MaxHeight="500" MaxWidth="850"
     MinHeight="500" MinWidth="850"
-    Title="{Binding Title}" Height="500" Width="850" 
+    Title="{Binding Title}" Height="500" Width="850"
     prism:ViewModelLocator.AutoWireViewModel="True">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -27,12 +27,14 @@
     </i:Interaction.Triggers>
     <DockPanel LastChildFill="True">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
-            <Button Margin="2" Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding NavigateCommand}" CommandParameter="UsersList">
+            <Button Margin="2" Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}"
+                    Command="{Binding NavigateCommand}" CommandParameter="UsersList">
                 <Button.ToolTip>
                     <TextBlock FontWeight="Bold" Text="Users List" />
                 </Button.ToolTip>
             </Button>
-            <Button Margin="2" Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding NavigateCommand}" CommandParameter="SettingsPage">
+            <Button Margin="2" Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}"
+                    Command="{Binding NavigateCommand}" CommandParameter="SettingsPage">
                 <Button.ToolTip>
                     <TextBlock FontWeight="Bold" Text="Settings" />
                 </Button.ToolTip>

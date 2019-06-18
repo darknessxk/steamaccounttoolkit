@@ -104,9 +104,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\Security\Cryptography.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Utils.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="Localization.cs" />
     <Compile Include="ViewModels\AddUserViewModel.cs" />
     <Compile Include="ViewModels\AppMainViewModel.cs" />
     <Compile Include="ViewModels\CaptchaSubmitPageViewModel.cs" />

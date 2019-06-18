@@ -1,23 +1,28 @@
 ﻿using System;
-using System.Diagnostics;
-using Microsoft.Win32;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace SteamAccountToolkit.Classes
 {
     public class Steam
     {
-        public bool IsOnMainWindow() => GetSteamMainWindow() != IntPtr.Zero;
-        public bool IsOnSteamGuard() => GetSteamLoginWindow() != IntPtr.Zero;
-        public bool IsOnLogin() => GetSteamLoginWindow() != IntPtr.Zero;
+        public Steam(Storage storage)
+        {
+            Storage = storage;
+
+            if (!Directory.Exists(UsersPath))
+                Directory.CreateDirectory(UsersPath);
+        }
+
         private Storage Storage { get; }
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
@@ -29,12 +34,19 @@ namespace SteamAccountToolkit.Classes
         private static Encoding Encoder => Encoding.UTF8;
         public string UsersPath => Path.Combine(Storage.FolderPath, "Users");
 
-        public Steam(Storage storage)
+        public bool IsOnMainWindow()
         {
-            Storage = storage;
+            return GetSteamMainWindow() != IntPtr.Zero;
+        }
 
-            if (!Directory.Exists(UsersPath))
-                Directory.CreateDirectory(UsersPath);
+        public bool IsOnSteamGuard()
+        {
+            return GetSteamLoginWindow() != IntPtr.Zero;
+        }
+
+        public bool IsOnLogin()
+        {
+            return GetSteamLoginWindow() != IntPtr.Zero;
         }
 
         public void Initialize()
@@ -47,10 +59,7 @@ namespace SteamAccountToolkit.Classes
         {
             Directory.GetFiles(UsersPath).ToList().ForEach(x =>
             {
-                if (x.EndsWith(FileExtension))
-                {
-                    LoadUserFromFile(x);
-                }
+                if (x.EndsWith(FileExtension)) LoadUserFromFile(x);
             });
         }
 
@@ -106,10 +115,10 @@ namespace SteamAccountToolkit.Classes
 
         public void DeleteUser(SteamUser user, bool deleteFromList)
         {
-            if(deleteFromList)
+            if (deleteFromList)
                 Utils.InvokeDispatcherIfRequired(() => Users.Remove(user));
 
-            var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username.ToString()));
+            var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username));
             var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
             if (File.Exists(Path.Combine(UsersPath, fileName)))
@@ -118,14 +127,19 @@ namespace SteamAccountToolkit.Classes
 
         public string GetSteamPath()
         {
-            var rKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, Environment.Is64BitProcess ? RegistryView.Registry64 : RegistryView.Registry32);
+            var rKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser,
+                Environment.Is64BitProcess ? RegistryView.Registry64 : RegistryView.Registry32);
 
             try
             {
                 rKey = rKey.OpenSubKey(@"Software\\Valve\\Steam");
                 if (rKey != null) return $"{rKey.GetValue("SteamExe")}";
             }
-            catch { return string.Empty; }
+            catch
+            {
+                return string.Empty;
+            }
+
             return string.Empty;
         }
 
@@ -152,7 +166,8 @@ namespace SteamAccountToolkit.Classes
 
         public IntPtr GetSteamGuardWindow()
         {
-            var window = WindowHelper.FindWindow(w => w.GetWindowText().StartsWith("Steam Guard —") || w.GetWindowText().StartsWith("Steam Guard -"));
+            var window = WindowHelper.FindWindow(w =>
+                w.GetWindowText().StartsWith("Steam Guard —") || w.GetWindowText().StartsWith("Steam Guard -"));
             return window.Handle;
         }
 
@@ -173,6 +188,7 @@ namespace SteamAccountToolkit.Classes
                         calledShutdown = true;
                         Shutdown();
                     }
+
                     Thread.Sleep(10);
                 }
 
@@ -194,7 +210,7 @@ namespace SteamAccountToolkit.Classes
                     var attempts = 0;
                     var attemptsLimit = 10;
 
-                    while (attempts < attemptsLimit & pId == 0)
+                    while ((attempts < attemptsLimit) & (pId == 0))
                     {
                         NtApi.GetWindowThreadProcessId(sgHwnd, out pId);
                         Thread.Sleep(250);
@@ -207,10 +223,12 @@ namespace SteamAccountToolkit.Classes
 
                     SendKeys.SendWait("{ENTER}");
 
-                    Thread.Sleep(5000); // i think 5 seconds is enough hmm (3 seconds sometimes send another key command)
+                    Thread.Sleep(
+                        5000); // i think 5 seconds is enough hmm (3 seconds sometimes send another key command)
                     if (!IsOnSteamGuard())
                         break;
                 }
+
                 //continue to main window gg!
             });
         }

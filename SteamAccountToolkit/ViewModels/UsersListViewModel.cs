@@ -1,30 +1,32 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
+using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
     public class UsersListViewModel : BindableBase
     {
         private readonly IRegionManager _regionManager;
-        public DelegateCommand<Classes.SteamUser> ViewUserCommand { get; }
-        public DelegateCommand GoToAddUserCommand { get; }
-        public DelegateCommand<Classes.SteamUser> SubmitInfoCommand { get; }
 
         public UsersListViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
 
-            ViewUserCommand = new DelegateCommand<Classes.SteamUser>(ViewUser);
+            ViewUserCommand = new DelegateCommand<SteamUser>(ViewUser);
             GoToAddUserCommand = new DelegateCommand(GoToAddUser);
-            SubmitInfoCommand = new DelegateCommand<Classes.SteamUser>(SubmitInfo);
+            SubmitInfoCommand = new DelegateCommand<SteamUser>(SubmitInfo);
         }
 
-        private void SubmitInfo(Classes.SteamUser user)
+        public DelegateCommand<SteamUser> ViewUserCommand { get; }
+        public DelegateCommand GoToAddUserCommand { get; }
+        public DelegateCommand<SteamUser> SubmitInfoCommand { get; }
+
+        private void SubmitInfo(SteamUser user)
         {
             var nav = new NavigationParameters
             {
-                { "user", user }
+                {"user", user}
             };
 
             switch (user.RequestType)
@@ -43,14 +45,14 @@ namespace SteamAccountToolkit.ViewModels
             _regionManager.RequestNavigate("ContentRegion", "AddUser");
         }
 
-        private void ViewUser(Classes.SteamUser user)
+        private void ViewUser(SteamUser user)
         {
             if (!user.IsInitialized)
                 return;
 
             var nav = new NavigationParameters
             {
-                { "user", user }
+                {"user", user}
             };
 
             _regionManager.RequestNavigate("ContentRegion", "UserPage", nav);

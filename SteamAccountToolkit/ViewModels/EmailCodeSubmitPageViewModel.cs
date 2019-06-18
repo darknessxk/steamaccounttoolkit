@@ -1,12 +1,5 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using Prism.Regions;
 using SteamAccountToolkit.Classes;
 
@@ -14,23 +7,10 @@ namespace SteamAccountToolkit.ViewModels
 {
     public class EmailCodeSubmitPageViewModel : BindableBase, INavigationAware
     {
-        private SteamUser _user;
-
-        public SteamUser User
-        {
-            get => _user;
-            set => SetProperty(ref _user, value);
-        }
+        private readonly IRegionManager _regionManager;
 
         private string _emailCode;
-        public string EmailCode
-        {
-            get => _emailCode;
-            set => SetProperty(ref _emailCode, value);
-        }
-
-        public DelegateCommand SubmitEmailCodeCommand { get; }
-        private readonly IRegionManager _regionManager;
+        private SteamUser _user;
 
         public EmailCodeSubmitPageViewModel(IRegionManager regionManager)
         {
@@ -38,11 +18,19 @@ namespace SteamAccountToolkit.ViewModels
             SubmitEmailCodeCommand = new DelegateCommand(SubmitCode);
         }
 
-        public void SubmitCode()
+        public SteamUser User
         {
-            User.AuthUser.EmailCode = EmailCode;
-            _regionManager.RequestNavigate("ContentRegion", "UsersList");
+            get => _user;
+            set => SetProperty(ref _user, value);
         }
+
+        public string EmailCode
+        {
+            get => _emailCode;
+            set => SetProperty(ref _emailCode, value);
+        }
+
+        public DelegateCommand SubmitEmailCodeCommand { get; }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
@@ -57,6 +45,14 @@ namespace SteamAccountToolkit.ViewModels
             return true;
         }
 
-        public void OnNavigatedFrom(NavigationContext navigationContext) { }
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+        }
+
+        public void SubmitCode()
+        {
+            User.AuthUser.EmailCode = EmailCode;
+            _regionManager.RequestNavigate("ContentRegion", "UsersList");
+        }
     }
 }

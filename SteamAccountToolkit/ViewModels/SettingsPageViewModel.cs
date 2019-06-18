@@ -1,31 +1,16 @@
-﻿using MaterialDesignColors;
+﻿using System.Collections.ObjectModel;
+using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
 using Prism.Commands;
 using Prism.Mvvm;
-using System.Collections.ObjectModel;
 
 namespace SteamAccountToolkit.ViewModels
 {
     public class SettingsPageViewModel : BindableBase
     {
-        public ObservableCollection<Swatch> PrimarySwatchesColors { get; private set; }
-        public ObservableCollection<Swatch> AccentSwatchesColors { get; private set; }
-        public Swatch CurrentPrimary
-        {
-            get => _paletteHelper.QueryPalette().PrimarySwatch;
-            set => _paletteHelper.ReplacePrimaryColor(value);
-        }
-        public Swatch CurrentAccent
-        {
-            get => _paletteHelper.QueryPalette().AccentSwatch;
-            set => _paletteHelper.ReplaceAccentColor(value);
-        }
+        private readonly PaletteHelper _paletteHelper;
 
-        private SwatchesProvider _swatchesProvider;
-        private PaletteHelper _paletteHelper;
-
-        public DelegateCommand SetColorDarkModeCommand { get; private set; }
-        public DelegateCommand SetColorLightModeCommand { get; private set; }
+        private readonly SwatchesProvider _swatchesProvider;
 
         public SettingsPageViewModel()
         {
@@ -34,7 +19,7 @@ namespace SteamAccountToolkit.ViewModels
 
             PrimarySwatchesColors = new ObservableCollection<Swatch>(_swatchesProvider.Swatches);
             foreach (var sw in _swatchesProvider.Swatches)
-                if(!string.IsNullOrEmpty(sw.Name))
+                if (!string.IsNullOrEmpty(sw.Name))
                     PrimarySwatchesColors.Add(sw);
 
             AccentSwatchesColors = new ObservableCollection<Swatch>();
@@ -47,9 +32,27 @@ namespace SteamAccountToolkit.ViewModels
             SetColorLightModeCommand = new DelegateCommand(() => SetColorMode(false));
         }
 
+        public ObservableCollection<Swatch> PrimarySwatchesColors { get; }
+        public ObservableCollection<Swatch> AccentSwatchesColors { get; }
+
+        public Swatch CurrentPrimary
+        {
+            get => _paletteHelper.QueryPalette().PrimarySwatch;
+            set => _paletteHelper.ReplacePrimaryColor(value);
+        }
+
+        public Swatch CurrentAccent
+        {
+            get => _paletteHelper.QueryPalette().AccentSwatch;
+            set => _paletteHelper.ReplaceAccentColor(value);
+        }
+
+        public DelegateCommand SetColorDarkModeCommand { get; }
+        public DelegateCommand SetColorLightModeCommand { get; }
+
         private void SetColorMode(bool? isDark)
         {
-            if(isDark.HasValue)
+            if (isDark.HasValue)
                 _paletteHelper.SetLightDark(isDark.Value);
         }
     }

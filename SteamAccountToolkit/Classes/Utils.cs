@@ -10,7 +10,7 @@ namespace SteamAccountToolkit.Classes
         public static void InvokeDispatcherIfRequired(Action callback)
         {
             var d = Application.Current.Dispatcher;
-            
+
             if (d.Thread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
                 d.Invoke(callback);
             else
@@ -23,10 +23,8 @@ namespace SteamAccountToolkit.Classes
                 return false;
 
             for (var i = 0; i < a.Length; i++)
-            {
                 if (a[i] != b[i])
                     return false;
-            }
 
             return true;
         }
@@ -36,7 +34,6 @@ namespace SteamAccountToolkit.Classes
             var b = new byte[count];
 
             for (var n = 0; n < count; n++)
-            {
                 using (var rng = new RNGCryptoServiceProvider())
                 {
                     for (var r = 0; r < rounds; r++)
@@ -46,7 +43,7 @@ namespace SteamAccountToolkit.Classes
                         b[n] = temp[0];
                     }
                 }
-            }
+
             return b;
         }
     }

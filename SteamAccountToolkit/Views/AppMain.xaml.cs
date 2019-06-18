@@ -3,7 +3,7 @@
 namespace SteamAccountToolkit.Views
 {
     /// <summary>
-    /// Interaction logic for AppMain.xaml
+    ///     Interaction logic for AppMain.xaml
     /// </summary>
     public partial class AppMain : MetroWindow
     {

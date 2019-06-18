@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:SteamAccountToolkit"
-             xmlns:prism="http://prismlibrary.com/"        
-             Height="450" Width="800" 
+             xmlns:prism="http://prismlibrary.com/"
+             Height="450" Width="800"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <Label HorizontalAlignment="Center" Content="Submit Captcha" FontSize="20" />

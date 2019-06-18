@@ -6,6 +6,8 @@ namespace SteamAccountToolkit.Classes
 {
     public static class NtApi
     {
+        public delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+
         public const bool EnumWindowsContinueEnumerating = true;
         public const bool EnumWindowsStopEnumerating = false;
 
@@ -13,7 +15,8 @@ namespace SteamAccountToolkit.Classes
         public static extern bool IsWindowVisible(IntPtr hwnd);
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string szClass, string szWindow);
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string szClass,
+            string szWindow);
 
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hwnd);
@@ -23,8 +26,6 @@ namespace SteamAccountToolkit.Classes
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
-
-        public delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern bool EnumWindows(EnumWindowProc cb, IntPtr lParam);

@@ -3,7 +3,7 @@
 namespace SteamAccountToolkit.Views
 {
     /// <summary>
-    /// Interaction logic for CaptchaSubmitPage
+    ///     Interaction logic for CaptchaSubmitPage
     /// </summary>
     public partial class CaptchaSubmitPage : UserControl
     {

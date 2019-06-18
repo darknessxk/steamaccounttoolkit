@@ -3,7 +3,7 @@
 namespace SteamAccountToolkit.Views
 {
     /// <summary>
-    /// Interaction logic for AddUser
+    ///     Interaction logic for AddUser
     /// </summary>
     public partial class AddUser : UserControl
     {
