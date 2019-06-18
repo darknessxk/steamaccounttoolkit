@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
+using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit
 {
@@ -8,14 +9,14 @@ namespace SteamAccountToolkit
         public static BitmapImage DefaultImage;
 
 #if DEBUG
-        public static string Version { get; } = $@"0.02d DEV";
+        public static string Version { get; } = @"0.02d DEV";
 #else
         public static string Version { get; } = $@"0.02d RC";
 #endif
 
-        public static Classes.Storage Storage { get; } = new Classes.Storage();
-        public static Classes.Steam Steam { get; } = new Classes.Steam(Storage);
-        public static ObservableCollection<Classes.SteamUser> Users => Steam.Users;
+        public static Storage Storage { get; } = new Storage();
+        public static Steam Steam { get; } = new Steam(Storage);
+        public static ObservableCollection<SteamUser> Users => Steam.Users;
         public static bool IsAppRunning;
     }
 }

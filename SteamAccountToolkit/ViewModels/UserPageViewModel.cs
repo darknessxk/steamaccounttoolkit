@@ -1,35 +1,23 @@
-﻿using Prism.Commands;
+﻿using System.Threading;
+using System.Windows;
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using System;
-using System.Threading;
 using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
     public class UserPageViewModel : BindableBase, INavigationAware
     {
-        private Classes.SteamUser _user;
-        public Classes.SteamUser User
-        {
-            get => _user;
-            set => SetProperty(ref _user, value);
-        }
+        private readonly IRegionManager _regionManager;
 
-        public DelegateCommand DeleteUserCommand { get; private set; }
-        public DelegateCommand CopySteamGuardCommand { get; private set; }
-        public DelegateCommand LoginCommand { get; private set; }
-        public DelegateCommand EditUserCommand { get; private set; }
-        public DelegateCommand GoBackCommand { get; private set; }
+        private readonly int _intervalPerTick = 1000; //ms
 
         private string _steamGuard;
-        public string SteamGuard
-        {
-            get => _steamGuard;
-            set => SetProperty(ref _steamGuard, value);
-        }
 
-        private readonly IRegionManager _regionManager;
+        private int _steamGuardUpdateInterval = 30;
+        private int _threadTickCount;
+        private SteamUser _user;
 
         public UserPageViewModel(IRegionManager regionManager)
         {
@@ -44,27 +32,60 @@ namespace SteamAccountToolkit.ViewModels
             steamGuardTh.Start();
         }
 
-        private int _intervalPerTick = 1000; //ms
-        private int _threadTickCount;
+        public SteamUser User
+        {
+            get => _user;
+            set => SetProperty(ref _user, value);
+        }
+
+        public DelegateCommand DeleteUserCommand { get; }
+        public DelegateCommand CopySteamGuardCommand { get; }
+        public DelegateCommand LoginCommand { get; }
+        public DelegateCommand EditUserCommand { get; }
+        public DelegateCommand GoBackCommand { get; }
+
+        public string SteamGuard
+        {
+            get => _steamGuard;
+            set => SetProperty(ref _steamGuard, value);
+        }
+
         public int ThreadTickCount
         {
             get => _threadTickCount;
             set => SetProperty(ref _threadTickCount, value);
         }
 
-        private int _steamGuardUpdateInterval = 30;
         public int SteamGuardUpdateInterval
         {
             get => _steamGuardUpdateInterval;
             set => SetProperty(ref _steamGuardUpdateInterval, value);
         }
-        
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            if (navigationContext.Parameters["user"] is SteamUser user)
+                return User != null && User.Username == user.Username;
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            if (navigationContext.Parameters["user"] is SteamUser user)
+                User = user;
+        }
+
         private void SteamGuardThread()
         {
-            while(Globals.IsAppRunning)
-            {
+            while (Globals.IsAppRunning)
                 if (User == null)
+                {
                     Thread.Sleep(100);
+                }
                 else
                 {
                     if (string.IsNullOrEmpty(SteamGuard))
@@ -79,7 +100,6 @@ namespace SteamAccountToolkit.ViewModels
                     Thread.Sleep(_intervalPerTick);
                     ThreadTickCount += 1;
                 }
-            }
         }
 
         private void GoBack()
@@ -89,7 +109,7 @@ namespace SteamAccountToolkit.ViewModels
 
         private void CopySteamGuard()
         {
-            System.Windows.Clipboard.SetText(SteamGuard);
+            Clipboard.SetText(SteamGuard);
         }
 
         private void EditUser()
@@ -106,21 +126,6 @@ namespace SteamAccountToolkit.ViewModels
         {
             Globals.Steam.DeleteUser(User);
             _regionManager.RequestNavigate("ContentRegion", "UsersList");
-        }
-
-        public bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            if (navigationContext.Parameters["user"] is SteamUser user)
-                return User != null && User.Username == user.Username;
-            return true;
-        }
-
-        public void OnNavigatedFrom(NavigationContext navigationContext) { }
-
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            if (navigationContext.Parameters["user"] is SteamUser user)
-                User = user;
         }
     }
 }

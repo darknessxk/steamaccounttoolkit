@@ -6,10 +6,7 @@ namespace SteamAccountToolkit.Classes
     [Serializable]
     public class Settings
     {
-        [DataMember]
-        public string ThemeColor;
-
-        [DataMember]
-        public string ThemeAccent;
+        [DataMember] public string ThemeAccent;
+        [DataMember] public string ThemeColor;
     }
 }

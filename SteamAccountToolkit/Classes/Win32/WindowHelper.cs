@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using WinSendKeys = System.Windows.Forms.SendKeys;
 
 namespace SteamAccountToolkit.Classes
 {
     public static class WindowHelper
     {
-        public static WinHandle GetForegroundWindow() => new WinHandle(NtApi.GetForegroundWindow());
+        public static WinHandle GetForegroundWindow()
+        {
+            return new WinHandle(NtApi.GetForegroundWindow());
+        }
+
         public static IEnumerable<WinHandle> FindWindows(Predicate<WinHandle> pred)
         {
             if (pred == null)
@@ -20,9 +25,9 @@ namespace SteamAccountToolkit.Classes
             {
                 var win = new WinHandle(ptr);
 
-                if(pred.Invoke(win))
+                if (pred.Invoke(win))
                 {
-                    if(winList == null)
+                    if (winList == null)
                         winList = new List<WinHandle>();
                     winList.Add(win);
                 }
@@ -48,6 +53,7 @@ namespace SteamAccountToolkit.Classes
                     ret = win;
                     return NtApi.EnumWindowsStopEnumerating;
                 }
+
                 return NtApi.EnumWindowsContinueEnumerating;
             }, IntPtr.Zero);
 
@@ -60,7 +66,7 @@ namespace SteamAccountToolkit.Classes
         {
             var size = NtApi.GetWindowTextLength(win.Handle);
 
-            if(size > 0)
+            if (size > 0)
             {
                 var sb = new StringBuilder(size + 1); // +1 [size+1] = '\0';
                 NtApi.GetWindowText(win.Handle, sb, sb.Capacity);
@@ -85,14 +91,17 @@ namespace SteamAccountToolkit.Classes
             return sb.ToString();
         }
 
-        public static WinHandle SendKeys(this WinHandle win, string text, bool sendCharbyChar = false, int interval = 10)
+        public static WinHandle SendKeys(this WinHandle win, string text, bool sendCharbyChar = false,
+            int interval = 10)
         {
-            if(sendCharbyChar)
+            if (sendCharbyChar)
+            {
                 foreach (var c in text)
                 {
-                    System.Threading.Thread.Sleep(interval);
+                    Thread.Sleep(interval);
                     win.SendKey(c);
                 }
+            }
             else
             {
                 if (NtApi.GetForegroundWindow() != win.Handle)

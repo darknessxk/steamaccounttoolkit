@@ -125,8 +125,8 @@
     <Compile Include="Classes\Storage.cs" />
     <Compile Include="Classes\SteamUser.cs" />
     <Compile Include="Classes\Steam.cs" />
-    <Compile Include="Classes\WindowHandle.cs" />
-    <Compile Include="Classes\WindowHelper.cs" />
+    <Compile Include="Classes\Win32\WindowHandle.cs" />
+    <Compile Include="Classes\Win32\WindowHelper.cs" />
     <Compile Include="Views\CaptchaSubmitPage.xaml.cs">
       <DependentUpon>CaptchaSubmitPage.xaml</DependentUpon>
     </Compile>
@@ -180,7 +180,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\NtApi.cs" />
+    <Compile Include="Classes\Win32\NtApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
