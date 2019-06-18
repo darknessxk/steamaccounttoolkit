@@ -20,7 +20,21 @@
     
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
-            <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoToAddUserCommand}" />
+            <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoToAddUserCommand}">
+                <Button.ToolTip>
+                    <WrapPanel>
+                        <TextBlock FontWeight="Bold" Text="Add a new user"/>
+                    </WrapPanel>
+                </Button.ToolTip>
+            </Button>
+
+            <Button Content="&#xf56f;" FontFamily="{StaticResource FontAwesome-Solid}">
+                <Button.ToolTip>
+                    <WrapPanel>
+                        <TextBlock FontWeight="Bold" Text="Import user from file"/>
+                    </WrapPanel>
+                </Button.ToolTip>
+            </Button>
         </StackPanel>
         <ListView SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{x:Static local:Globals.Users}">
             <ListView.ItemsPanel>
@@ -38,6 +52,11 @@
                         </i:Interaction.Triggers>
 
                         <DockPanel>
+                            <DockPanel.ToolTip>
+                                <WrapPanel>
+                                    <Label ContentStringFormat="View user: {0}" Content="{Binding PersonaName}" />
+                                </WrapPanel>
+                            </DockPanel.ToolTip>
                             <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True">
                                 <ProgressBar.Style>
                                     <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignCircularProgressBar}">
@@ -56,7 +75,6 @@
                                     </Style>
                                 </ProgressBar.Style>
                             </ProgressBar>
-                            
                             <Image DockPanel.Dock="Top" Source="{Binding ProfileImage}">
                                 <Image.Style>
                                     <Style TargetType="Image">

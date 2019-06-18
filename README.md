@@ -33,8 +33,10 @@ Created to manage multiples account in a single place you can accept your trades
 * UI: Add theme management system (Target Version 0.02) **(DONE)**
 * UI: Better per user size management (Target Version 0.02) **(DONE)**
 
+* Security: User Settings for Cryptography management per account  (Target Version 0.03)
+* Security: Crypto Vault (Target Version 0.03)
+
 * Functionality: Steam Guard In-App (Target Version 0.01) **(DONE)**
-* Functionality: User Settings for Cryptography management per account  (Target Version 0.03)
 * Functionality: Cloud Saving with at least 2 options: Google Drive and FTP (Target Version 0.04)
 * Functionality: Accept Trades through the app (Target Version 0.04)
 * Functionality: Trades notification per account (Target Version 0.04)

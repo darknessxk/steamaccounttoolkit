@@ -7,7 +7,11 @@
              prism:ViewModelLocator.AutoWireViewModel="True">
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top" Margin="5">
-            <Button Content="&#xf060;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoBackCommand}" />
+            <Button Content="&#xf060;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding GoBackCommand}">
+                <Button.ToolTip>
+                    <TextBlock FontWeight="Bold" Text="Return" />
+                </Button.ToolTip>
+            </Button>
         </WrapPanel>
 
         <Grid>
@@ -26,9 +30,21 @@
             </GroupBox>
             <GroupBox Header="Actions" HorizontalAlignment="Left" Height="100" Margin="10,215,0,0" VerticalAlignment="Top" Width="200">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Button Content="&#xF2F6;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding LoginCommand}" />
-                    <Button Content="&#xF2ED;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding DeleteUserCommand}" />
-                    <Button Content="&#xF085;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding EditUserCommand}" />
+                    <Button Content="&#xF2F6;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding LoginCommand}">
+                        <Button.ToolTip>
+                            <TextBlock FontWeight="Bold" Text="Login" />
+                        </Button.ToolTip>
+                    </Button>
+                    <Button Content="&#xF2ED;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding DeleteUserCommand}">
+                        <Button.ToolTip>
+                            <TextBlock FontWeight="Bold" Text="Delete" />
+                        </Button.ToolTip>
+                    </Button>
+                    <Button Content="&#xF085;" FontFamily="{StaticResource FontAwesome-Solid}" Command="{Binding EditUserCommand}">
+                        <Button.ToolTip>
+                            <TextBlock FontWeight="Bold" Text="Edit" />
+                        </Button.ToolTip>
+                    </Button>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="User Info" HorizontalAlignment="Left" Height="305" Margin="215,10,0,0" VerticalAlignment="Top" Width="385">
