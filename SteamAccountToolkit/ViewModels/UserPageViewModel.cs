@@ -3,6 +3,7 @@ using Prism.Mvvm;
 using Prism.Regions;
 using System;
 using System.Threading;
+using SteamAccountToolkit.Classes;
 
 namespace SteamAccountToolkit.ViewModels
 {
@@ -28,9 +29,7 @@ namespace SteamAccountToolkit.ViewModels
             set => SetProperty(ref _steamGuard, value);
         }
 
-        private Thread _steamGuardTh;
-
-        private IRegionManager _regionManager;
+        private readonly IRegionManager _regionManager;
 
         public UserPageViewModel(IRegionManager regionManager)
         {
@@ -41,8 +40,8 @@ namespace SteamAccountToolkit.ViewModels
             EditUserCommand = new DelegateCommand(EditUser);
             GoBackCommand = new DelegateCommand(GoBack);
 
-            _steamGuardTh = new Thread(SteamGuardThread);
-            _steamGuardTh.Start();
+            var steamGuardTh = new Thread(SteamGuardThread);
+            steamGuardTh.Start();
         }
 
         private int _intervalPerTick = 1000; //ms
@@ -78,7 +77,7 @@ namespace SteamAccountToolkit.ViewModels
                     }
 
                     Thread.Sleep(_intervalPerTick);
-                    ThreadTickCount = ThreadTickCount + 1;
+                    ThreadTickCount += 1;
                 }
             }
         }
@@ -111,8 +110,7 @@ namespace SteamAccountToolkit.ViewModels
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-            var user = navigationContext.Parameters["user"] as Classes.SteamUser;
-            if (user != null)
+            if (navigationContext.Parameters["user"] is SteamUser user)
                 return User != null && User.Username == user.Username;
             return true;
         }
@@ -121,8 +119,7 @@ namespace SteamAccountToolkit.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var user = navigationContext.Parameters["user"] as Classes.SteamUser;
-            if (user != null)
+            if (navigationContext.Parameters["user"] is SteamUser user)
                 User = user;
         }
     }
