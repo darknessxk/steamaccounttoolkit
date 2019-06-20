@@ -108,12 +108,15 @@
     <Compile Include="Classes\Security\Cryptography.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Utils.cs" />
+    <Compile Include="Classes\WPF\AddUserMultiConverter.cs" />
+    <Compile Include="Classes\WPF\GenericMultiConverter.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="Localization.cs" />
     <Compile Include="ViewModels\AddUserViewModel.cs" />
     <Compile Include="ViewModels\AppMainViewModel.cs" />
     <Compile Include="ViewModels\CaptchaSubmitPageViewModel.cs" />
     <Compile Include="ViewModels\EmailCodeSubmitPageViewModel.cs" />
+    <Compile Include="ViewModels\EncryptionKeyRequestViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\UsersListViewModel.cs" />
@@ -133,6 +136,9 @@
     </Compile>
     <Compile Include="Views\EmailCodeSubmitPage.xaml.cs">
       <DependentUpon>EmailCodeSubmitPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EncryptionKeyRequest.xaml.cs">
+      <DependentUpon>EncryptionKeyRequest.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -164,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EmailCodeSubmitPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EncryptionKeyRequest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
