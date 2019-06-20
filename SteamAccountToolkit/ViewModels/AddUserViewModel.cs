@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using System.Windows.Controls;
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using SteamAccountToolkit.Classes;
@@ -15,7 +16,7 @@ namespace SteamAccountToolkit.ViewModels
             _regionManager = regionManager;
             _user = new SteamUser();
 
-            AddUserCommand = new DelegateCommand(AddUser);
+            AddUserCommand = new DelegateCommand<PasswordBox[]>(AddUser);
             CancelCommand = new DelegateCommand(Cancel);
         }
 
@@ -25,13 +26,17 @@ namespace SteamAccountToolkit.ViewModels
             set => SetProperty(ref _user, value);
         }
 
-        public DelegateCommand AddUserCommand { get; }
+        public DelegateCommand<PasswordBox[]> AddUserCommand { get; }
         public DelegateCommand CancelCommand { get; }
 
-        private void AddUser()
+        private void AddUser(PasswordBox[] data)
         {
+            User.Password = data[0].Password;
+            User.AuthKey = data[1].Password;
+
             Globals.Steam.AddNewUser(User);
             _regionManager.RequestNavigate("ContentRegion", "UsersList");
+            User = new SteamUser();
         }
 
         private void Cancel()
