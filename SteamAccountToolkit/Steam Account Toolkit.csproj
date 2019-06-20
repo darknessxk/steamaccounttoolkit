@@ -104,6 +104,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\DataPack.cs" />
     <Compile Include="Classes\Security\Cryptography.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Utils.cs" />

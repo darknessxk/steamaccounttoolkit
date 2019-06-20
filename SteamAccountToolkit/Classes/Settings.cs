@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -12,9 +13,9 @@ namespace SteamAccountToolkit.Classes
         public class SettingsOptions
         {
             [Serializable]
-            public class Option<T> : BindableBase
+            public class Option<T>
             {
-                [DataMember] private T _data;
+                [DataMember] private T _value;
 
                 [field: DataMember]
                 public string Id { get; }
@@ -24,22 +25,24 @@ namespace SteamAccountToolkit.Classes
 
                 public T Value
                 {
-                    get => _data;
-                    set => SetProperty(ref _data, value);
+                    get => _value;
+                    set => _value = value;
                 }
 
-                public Option(string id, string name, T defaultValue = default(T))
+                public Option(string id, string name)
                 {
                     Name = name;
                     Id = id;
-                    Value = defaultValue;
                 }
+
+                public void Set(T value) => Value = value;
+                public T Get() => Value;
             }
 
-            [DataMember] public Option<string> ThemeAccent => new Option<string>("ThemeAccent", "Theme Accent", "deeppurple");
-            [DataMember] public Option<bool> ThemeIsDark => new Option<bool>("ThemeIsDark", "Theme Is Dark");
-            [DataMember] public Option<string> ThemeColor => new Option<string>("ThemeColor", "Theme Color", "deeppurple");
-            [DataMember] public Option<bool> EncryptionEnabled => new Option<bool>("EncryptionEnabled", "Encryption Enabled");
+            [DataMember] public Option<string> ThemeAccent { get; set; }
+            [DataMember] public Option<bool> ThemeIsDark { get; set; }
+            [DataMember] public Option<string> ThemeColor { get; set; }
+            [DataMember] public Option<bool> EncryptionEnabled { get; set; }
         }
 
         private readonly Storage _storage;
@@ -66,22 +69,28 @@ namespace SteamAccountToolkit.Classes
 
         public SettingsOptions Load()
         {
-            if(!File.Exists(SettingsPath))
-                return new SettingsOptions();
-            else
+            if (!File.Exists(SettingsPath))
             {
-                var pack = _storage.Load(SettingsPath, _storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("Options")));
-                if (pack.Data.Length <= 0) return null;
-
-                using (var ms = new MemoryStream(pack.Data))
+                return new SettingsOptions
                 {
-                    IFormatter f = new BinaryFormatter();
+                    EncryptionEnabled = new SettingsOptions.Option<bool>("EncryptionEnabled", "Encryption Enabled") { Value = false },
+                    ThemeColor = new SettingsOptions.Option<string>("ThemeColor", "Theme Color") { Value = "deeppurple" },
+                    ThemeAccent = new SettingsOptions.Option<string>("ThemeAccent", "Theme Accent") { Value = "deeppurple" },
+                    ThemeIsDark = new SettingsOptions.Option<bool>("ThemeIsDark", "Theme Is Dark") { Value = false },
+                };
+            }
 
-                    var objData = f.Deserialize(ms);
+            var pack = _storage.Load(SettingsPath, _storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("Options")));
+            if (pack.Data.Length <= 0) return null;
 
-                    if (objData is SettingsOptions options)
-                        return options;
-                }
+            using (var ms = new MemoryStream(pack.Data))
+            {
+                IFormatter f = new BinaryFormatter();
+
+                var objData = f.Deserialize(ms);
+
+                if (objData is SettingsOptions options)
+                    return options;
             }
 
             return null;

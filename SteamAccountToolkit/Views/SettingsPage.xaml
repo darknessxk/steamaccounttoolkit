@@ -15,7 +15,7 @@
     <Grid>
         <DockPanel>
             <StackPanel Margin="10" Orientation="Horizontal" DockPanel.Dock="Top">
-                <Button Content="Save" />
+                <Button Content="Save" Command="{Binding SaveSettingsCommand}" />
             </StackPanel>
 
             <Grid Margin="10">

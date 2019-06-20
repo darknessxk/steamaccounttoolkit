@@ -20,7 +20,7 @@ namespace SteamAccountToolkit
 
         public static Storage Storage { get; } = new Storage();
         public static Settings SettingsManager { get; } = new Settings(Storage);
-        public static Settings.SettingsOptions Options { get; set; }
+        public static Settings.SettingsOptions Settings { get; set; }
         public static Cryptography Cryptography { get; } = new Cryptography();
         public static Steam Steam { get; } = new Steam(Storage, Cryptography);
         public static ObservableCollection<SteamUser> Users => Steam.Users;
