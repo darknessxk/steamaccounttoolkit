@@ -21,7 +21,7 @@
             <Grid Margin="10">
                 <TextBlock FontWeight="Bold" Margin="0, 0, 20, 20" HorizontalAlignment="Right"
                            VerticalAlignment="Bottom" Text="{x:Static local:Globals.Version}" />
-                <GroupBox Header="Theme Options" HorizontalAlignment="Left" Height="252" Margin="10,10,0,0"
+                <GroupBox Header="Theme Options" HorizontalAlignment="Left" Height="250" Margin="10,10,0,0"
                           VerticalAlignment="Top" Width="200">
                     <StackPanel HorizontalAlignment="Center">
                         <Label Content="Theme Base Color" />
@@ -44,9 +44,22 @@
                         </ComboBox>
                         <Label Content="Color Mode" />
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="Dark" Command="{Binding SetColorDarkModeCommand}" />
-                            <Button Content="Light" Command="{Binding SetColorLightModeCommand}" />
+                            <Button Content="Dark" Command="{Binding SetColorDarkModeCommand}" Margin="2.5" />
+                            <Button Content="Light" Command="{Binding SetColorLightModeCommand}" Margin="2.5" />
                         </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Encryption" HorizontalAlignment="Left" Height="250" Margin="215,10,0,0" VerticalAlignment="Top" Width="230">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Button Content="Set Encryption Key" Margin="5" />
+                        <WrapPanel HorizontalAlignment="Center" Margin="5">
+                            <Button Content="Enable" Margin="2.5" />
+                            <Button Content="Disable" Margin="2.5" />
+                        </WrapPanel>
+                        <TextBlock Text="Encryption Status" HorizontalAlignment="Center" Margin="5" />
+                        <Border BorderThickness="2">
+                            <TextBlock Text="Disabled" HorizontalAlignment="Center" Margin="5" />
+                        </Border>
                     </StackPanel>
                 </GroupBox>
 

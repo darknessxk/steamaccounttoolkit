@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -10,20 +11,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using SteamAccountToolkit.Classes.Security;
 
 namespace SteamAccountToolkit.Classes
 {
     public class Steam
     {
-        public Steam(Storage storage)
+
+
+        private Storage Storage { get; }
+        private Cryptography Crypto { get; }
+
+        public Steam(Storage storage, Cryptography crypto)
         {
+            Crypto = crypto;
             Storage = storage;
 
             if (!Directory.Exists(UsersPath))
                 Directory.CreateDirectory(UsersPath);
         }
-
-        private Storage Storage { get; }
 
         public ObservableCollection<SteamUser> Users { get; } = new ObservableCollection<SteamUser>();
 
@@ -31,7 +37,7 @@ namespace SteamAccountToolkit.Classes
         public bool IsPathPending => string.IsNullOrEmpty(GetSteamPath());
 
         private static string FileExtension => ".satuser";
-        private static Encoding Encoder => Encoding.UTF8;
+        private static readonly byte[] EncryptionMarker = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xDE, 0xAD, 0xBB, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
         public string UsersPath => Path.Combine(Storage.FolderPath, "Users");
 
         public bool IsOnMainWindow()
@@ -63,18 +69,29 @@ namespace SteamAccountToolkit.Classes
             });
         }
 
-        public void LoadUserFromFile(string filePath)
+        private static bool UserIsEncrypted(IReadOnlyList<byte> target) => Utils.PatternFinder(target, EncryptionMarker) > -1;
+
+        public void LoadUserFromFile(string filePath, byte[] encKey = null)
         {
-            var pak = Storage.Load(filePath, Storage.FileHashAlgo.ComputeHash(Encoder.GetBytes("SteamUser")));
+            var pak = Storage.Load(filePath, Storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("SteamUser")));
             if (pak.Data.Length <= 0) return;
+
+            if (UserIsEncrypted(pak.Data))
+            {
+                if (encKey == null)
+                    throw new Exception("Missing encryption key");
+
+                Crypto.Decrypt(pak.Data, encKey, out var decBytes);
+                pak.Data = decBytes;
+            }
+
             using (var ms = new MemoryStream(pak.Data))
             {
                 IFormatter f = new BinaryFormatter();
-                object b = null;
 
-                b = f.Deserialize(ms);
+                var objData = f.Deserialize(ms);
 
-                if (b is SteamUser.SerializableSteamUser user)
+                if (objData is SteamUser.SerializableSteamUser user)
                     AddNewUser(new SteamUser(user));
             }
         }
@@ -85,10 +102,10 @@ namespace SteamAccountToolkit.Classes
             user.Initialize();
         }
 
-        public void SaveUser(SteamUser user)
+        public void SaveUser(SteamUser user, byte[] encKey = null)
         {
             if (user == null) return;
-            var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username));
+            var hashValue = Storage.Hash.ComputeHash(Globals.Encoder.GetBytes(user.Username));
             var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
             DeleteUser(user, false); // in case of a possible updating action lol
@@ -98,12 +115,14 @@ namespace SteamAccountToolkit.Classes
                 IFormatter f = new BinaryFormatter();
 
                 f.Serialize(ms, user.User);
+                var data = ms.ToArray();
+                if(encKey != null)
+                    Crypto.Encrypt(data, encKey, out data);
 
-
-                Storage.Save(Path.Combine(UsersPath, fileName), new Storage.DataPack(Storage.FileHashAlgo)
+                Storage.Save(Path.Combine(UsersPath, fileName), new DataPack(Storage.FileHash)
                 {
-                    Data = ms.ToArray(),
-                    Header = new Storage.DataHeader(Storage.FileHashAlgo.ComputeHash(Encoder.GetBytes("SteamUser")))
+                    Data = data,
+                    Header = new DataPack.DataHeader(Storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("SteamUser")))
                 });
             }
         }
@@ -118,7 +137,7 @@ namespace SteamAccountToolkit.Classes
             if (deleteFromList)
                 Utils.InvokeDispatcherIfRequired(() => Users.Remove(user));
 
-            var hashValue = Storage.HashAlgo.ComputeHash(Encoder.GetBytes(user.Username));
+            var hashValue = Storage.Hash.ComputeHash(Globals.Encoder.GetBytes(user.Username));
             var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
 
             if (File.Exists(Path.Combine(UsersPath, fileName)))

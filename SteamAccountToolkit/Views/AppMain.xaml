@@ -40,6 +40,6 @@
                 </Button.ToolTip>
             </Button>
         </StackPanel>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" Margin="5" />
+        <ContentControl prism:RegionManager.RegionName="ContentRegion" Margin="1, 5, 1, 1" />
     </DockPanel>
 </Controls:MetroWindow>

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using MaterialDesignColors;
+using MaterialDesignThemes.Wpf;
 using Prism.Ioc;
 using SteamAccountToolkit.Views;
 
@@ -20,6 +23,13 @@ namespace SteamAccountToolkit
         {
             base.OnStartup(e);
             Globals.IsAppRunning = true;
+            Globals.Options = Globals.SettingsManager.Load();
+
+            var paletteHelper = new PaletteHelper();
+            var swatchesProvider = new SwatchesProvider();
+            paletteHelper.ReplacePrimaryColor(swatchesProvider.Swatches.First(x => x.Name == Globals.Options.ThemeColor.Value));
+            paletteHelper.ReplaceAccentColor(swatchesProvider.Swatches.First(x => x.Name == Globals.Options.ThemeAccent.Value && x.IsAccented));
+            paletteHelper.SetLightDark(Globals.Options.ThemeIsDark.Value);
 
             Globals.DefaultImage = new BitmapImage();
             Globals.DefaultImage.BeginInit();

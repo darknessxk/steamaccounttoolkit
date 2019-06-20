@@ -6,9 +6,8 @@ namespace SteamAccountToolkit.Classes.Security
 {
     public class Cryptography
     {
-        private TripleDESCryptoServiceProvider _cipher;
-        private HMACSHA256 _hash;
-        private static Encoding Encoder => Encoding.UTF8;
+        private SymmetricAlgorithm _cipher;
+        private HashAlgorithm _hash;
 
         private static void GetIvFromByteArray(IReadOnlyList<byte> target, int ivSize, out byte[] output, out byte[] ivKey)
         {
@@ -29,9 +28,17 @@ namespace SteamAccountToolkit.Classes.Security
             ivKey.CopyTo(output, target.Length);
         }
 
+        private void Destroy()
+        {
+            if (_cipher == null) return;
+            _cipher.Clear();
+            _cipher = null;
+        }
+
         private void Initialize()
         {
-            _cipher = new TripleDESCryptoServiceProvider
+            Destroy();
+            _cipher = new AesCryptoServiceProvider()
             {
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.PKCS7,
@@ -41,7 +48,7 @@ namespace SteamAccountToolkit.Classes.Security
 
         private void SetKey(byte[] key)
         {
-            _hash = new HMACSHA256();
+            _hash = new SHA256CryptoServiceProvider();
             _cipher.Key = _hash.ComputeHash(key);
             _hash.Clear();
         }
@@ -58,17 +65,17 @@ namespace SteamAccountToolkit.Classes.Security
             var encrypted = ctx.TransformFinalBlock(input, 0, input.Length);
             InsertIvIntoByteArray(encrypted, iv, out output);
 
-            _cipher.Clear();
+            Destroy();
         }
 
         public void Encrypt(byte[] input, string key, out byte[] output) =>
-            Encrypt(input, Encoder.GetBytes(key), out output);
+            Encrypt(input, Globals.Encoder.GetBytes(key), out output);
 
         public void Encrypt(string input, byte[] key, out byte[] output) =>
-            Encrypt(Encoder.GetBytes(input), key, out output);
+            Encrypt(Globals.Encoder.GetBytes(input), key, out output);
 
         public void Encrypt(string input, string key, out byte[] output) =>
-            Encrypt(Encoder.GetBytes(input), Encoder.GetBytes(key), out output);
+            Encrypt(Globals.Encoder.GetBytes(input), Globals.Encoder.GetBytes(key), out output);
 
         public void Decrypt(byte[] input, byte[] key, out byte[] output)
         {
@@ -83,16 +90,16 @@ namespace SteamAccountToolkit.Classes.Security
 
             output = ctx.TransformFinalBlock(encrypted, 0, encrypted.Length);
 
-            _cipher.Clear();
+            Destroy();
         }
 
         public void Decrypt(byte[] input, string key, out byte[] output) =>
-            Decrypt(input, Encoder.GetBytes(key), out output);
+            Decrypt(input, Globals.Encoder.GetBytes(key), out output);
 
         public void Decrypt(string input, byte[] key, out byte[] output) =>
-            Decrypt(Encoder.GetBytes(input), key, out output);
+            Decrypt(Globals.Encoder.GetBytes(input), key, out output);
 
         public void Decrypt(string input, string key, out byte[] output) =>
-            Decrypt(Encoder.GetBytes(input), Encoder.GetBytes(key), out output);
+            Decrypt(Globals.Encoder.GetBytes(input), Globals.Encoder.GetBytes(key), out output);
     }
 }

@@ -23,7 +23,7 @@
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <Button Content="&#xf234;" FontFamily="{StaticResource FontAwesome-Solid}"
-                    Command="{Binding GoToAddUserCommand}">
+                    Command="{Binding GoToAddUserCommand}" Margin="2.5">
                 <Button.ToolTip>
                     <WrapPanel>
                         <TextBlock FontWeight="Bold" Text="Add a new user" />
@@ -31,7 +31,7 @@
                 </Button.ToolTip>
             </Button>
 
-            <Button Content="&#xf56f;" FontFamily="{StaticResource FontAwesome-Solid}">
+            <Button Content="&#xf56f;" FontFamily="{StaticResource FontAwesome-Solid}" Margin="2.5">
                 <Button.ToolTip>
                     <WrapPanel>
                         <TextBlock FontWeight="Bold" Text="Import user from file" />

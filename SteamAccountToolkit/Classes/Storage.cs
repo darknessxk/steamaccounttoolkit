@@ -23,19 +23,17 @@ namespace SteamAccountToolkit.Classes
 
         private readonly Mutex _mutex = new Mutex();
 
+        public HashAlgorithm Hash { get; }
+        public HashAlgorithm FileHash { get; }
+
         public Storage()
         {
-            HashAlgo = new HMACSHA1(HashKey);
-            FileHashAlgo = new HMACSHA1(FileSignatureKey);
+            Hash = new HMACSHA1(HashKey);
+            FileHash = new HMACSHA1(FileSignatureKey);
 
             if (!Directory.Exists(FolderPath))
                 Directory.CreateDirectory(FolderPath);
         }
-
-        public static byte[] CurrentPackageVersion => new byte[] {0x1, 0x0, 0x0, 0x01};
-
-        public HMACSHA1 HashAlgo { get; }
-        public HMACSHA1 FileHashAlgo { get; }
 
         public string FolderPath =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -43,6 +41,8 @@ namespace SteamAccountToolkit.Classes
 
         ~Storage()
         {
+            Hash.Dispose();
+            FileHash.Dispose();
             _mutex.Dispose();
         }
 
@@ -67,7 +67,7 @@ namespace SteamAccountToolkit.Classes
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 if (!fs.CanRead) return null;
-                if (fs.Length < CurrentPackageVersion.Length)
+                if (fs.Length < Globals.CurrentDataPackVersion.Length)
                     return null;
 
                 IFormatter f = new BinaryFormatter();
@@ -78,13 +78,13 @@ namespace SteamAccountToolkit.Classes
                 if (pak == null)
                     return null;
 
-                if (!pak.Header.IsVersionValid(CurrentPackageVersion))
+                if (!pak.Header.IsVersionValid(Globals.CurrentDataPackVersion))
                     throw new Exception("Wrong version");
 
                 if (!pak.Header.IsSignatureValid(signature))
                     throw new Exception("Invalid file signature");
 
-                if (!pak.IsIntegrityHashValid(FileHashAlgo.ComputeHash(pak.Data)))
+                if (!pak.IsIntegrityHashValid(FileHash.ComputeHash(pak.Data)))
                     throw new Exception("Data is corrupted");
             }
 
@@ -92,62 +92,6 @@ namespace SteamAccountToolkit.Classes
         }
 
 
-        [Serializable]
-        public class DataHeader
-        {
-            public DataHeader(byte[] signature)
-            {
-                FileSignature = signature;
-            }
-
-            [DataMember] public byte[] Version => CurrentPackageVersion;
-
-            [DataMember] public byte[] FileSignature { get; private set; }
-
-            public bool IsVersionValid(byte[] target)
-            {
-                return Utils.CompareByteArrays(target, Version);
-            }
-
-            public bool IsSignatureValid(byte[] target)
-            {
-                return Utils.CompareByteArrays(target, FileSignature);
-            }
-        }
-
-        [Serializable]
-        public class DataPack
-        {
-            private byte[] _data;
-
-            [NonSerialized] private readonly HMACSHA1 _hashingAlgo;
-
-            public DataPack(HMACSHA1 hashAlgo)
-            {
-                _hashingAlgo = hashAlgo;
-            }
-
-            [DataMember] public DataHeader Header { get; set; }
-
-            [DataMember] public byte[] IntegrityHash { get; internal set; }
-
-            [DataMember]
-            public byte[] Data
-            {
-                get => _data;
-                set => UpdateData(value);
-            }
-
-            public bool IsIntegrityHashValid(byte[] target)
-            {
-                return Utils.CompareByteArrays(target, IntegrityHash);
-            }
-
-            private void UpdateData(byte[] data)
-            {
-                _data = data;
-                IntegrityHash = _hashingAlgo.ComputeHash(_data);
-            }
-        }
+        
     }
 }
