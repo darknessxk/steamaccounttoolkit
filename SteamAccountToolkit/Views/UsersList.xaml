@@ -60,7 +60,8 @@
                         <DockPanel>
                             <DockPanel.ToolTip>
                                 <WrapPanel>
-                                    <Label ContentStringFormat="View user: {0}" Content="{Binding PersonaName}" />
+                                    <TextBlock Text="View user:" />
+                                    <TextBlock Text="{Binding PersonaName}" />
                                 </WrapPanel>
                             </DockPanel.ToolTip>
                             <ProgressBar DockPanel.Dock="Top" IsIndeterminate="True">
