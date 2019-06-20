@@ -73,7 +73,7 @@ namespace SteamAccountToolkit.Classes
 
         public void LoadUserFromFile(string filePath, byte[] encKey = null)
         {
-            var pak = Storage.Load(filePath, Storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("SteamUser")));
+            var pak = Storage.Load(filePath, Globals.Encoder.GetBytes("SteamUser"));
             if (pak.Data.Length <= 0) return;
 
             if (UserIsEncrypted(pak.Data))
@@ -105,8 +105,7 @@ namespace SteamAccountToolkit.Classes
         public void SaveUser(SteamUser user, byte[] encKey = null)
         {
             if (user == null) return;
-            var hashValue = Storage.Hash.ComputeHash(Globals.Encoder.GetBytes(user.Username));
-            var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+            var fileName = $"{user.SteamId}-{user.PersonaName}{FileExtension}";
 
             DeleteUser(user, false); // in case of a possible updating action lol
 
@@ -119,11 +118,7 @@ namespace SteamAccountToolkit.Classes
                 if(encKey != null)
                     Crypto.Encrypt(data, encKey, out data);
 
-                Storage.Save(Path.Combine(UsersPath, fileName), new DataPack(Storage.FileHash)
-                {
-                    Data = data,
-                    Header = new DataPack.DataHeader(Storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("SteamUser")))
-                });
+                Storage.Save(Path.Combine(UsersPath, fileName), data, Globals.Encoder.GetBytes("SteamUser"));
             }
         }
 
@@ -137,8 +132,7 @@ namespace SteamAccountToolkit.Classes
             if (deleteFromList)
                 Utils.InvokeDispatcherIfRequired(() => Users.Remove(user));
 
-            var hashValue = Storage.Hash.ComputeHash(Globals.Encoder.GetBytes(user.Username));
-            var fileName = $"{BitConverter.ToString(hashValue)}{FileExtension}".Replace("-", string.Empty);
+            var fileName = $"{user.SteamId}-{user.PersonaName}{FileExtension}";
 
             if (File.Exists(Path.Combine(UsersPath, fileName)))
                 File.Delete(Path.Combine(UsersPath, fileName));

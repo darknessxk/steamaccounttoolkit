@@ -47,6 +47,7 @@ namespace SteamAccountToolkit.Classes
 
         private readonly Storage _storage;
         private string SettingsPath => Path.Combine(Path.Combine(_storage.FolderPath, ""), "settings.sat");
+        private static byte[] FileSignature => Globals.Encoder.GetBytes("Options");
 
         public Settings(Storage storage)
         {
@@ -59,11 +60,7 @@ namespace SteamAccountToolkit.Classes
             using (var ms = new MemoryStream())
             {
                 f.Serialize(ms, opts);
-                _storage.Save(SettingsPath, new DataPack(_storage.FileHash)
-                {
-                    Data = ms.ToArray(),
-                    Header = new DataPack.DataHeader(_storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("Options")))
-                });
+                _storage.Save(SettingsPath, ms.ToArray(), FileSignature);
             }
         }
 
@@ -80,7 +77,7 @@ namespace SteamAccountToolkit.Classes
                 };
             }
 
-            var pack = _storage.Load(SettingsPath, _storage.FileHash.ComputeHash(Globals.Encoder.GetBytes("Options")));
+            var pack = _storage.Load(SettingsPath, FileSignature);
             if (pack.Data.Length <= 0) return null;
 
             using (var ms = new MemoryStream(pack.Data))
