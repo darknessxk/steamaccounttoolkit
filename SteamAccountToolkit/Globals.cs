@@ -13,9 +13,9 @@ namespace SteamAccountToolkit
         public static byte[] CurrentDataPackVersion => new byte[] { 0x1, 0x0, 0x0, 0x01 };
 
 #if DEBUG
-        public static string Version { get; } = @"0.02d DEV";
+        public static string Version { get; } = @"0.02d (DEBUG VERSION)";
 #else
-        public static string Version { get; } = $@"0.02d RC";
+        public static string Version { get; } = $@"0.02d";
 #endif
 
         public static Storage Storage { get; } = new Storage();
