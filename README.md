@@ -26,7 +26,6 @@ Created to manage multiples account in a single place you can accept your trades
 * Code: Port to MVVM pattern (Target Version 0.01) **(DONE)**
 * Code: Nt Api usage Optmization (Target Version 0.01) **(DONE)**
 * Code: Multi Threading (Target Version 0.02b) **(DONE)**
-* Code: Crypthography Implementation (Target Version 0.02c)
 * Code: Steam Login properly handle EmailCode and Captcha (Target Version 0.02b) **(DONE)**
 * Code: Split SteamUser class and SerializableUser for less usage of disk (Target Version 0.02b) **(DONE)**
 
@@ -34,6 +33,7 @@ Created to manage multiples account in a single place you can accept your trades
 * UI: Better per user size management (Target Version 0.02) **(DONE)**
 
 * Security: User Settings for Cryptography management per account  (Target Version 0.03)
+* Security: Cryptography module full implementation; partially done (Target Version 0.02d)
 * Security: Crypto Vault (Target Version 0.03)
 
 * Functionality: Steam Guard In-App (Target Version 0.01) **(DONE)**
