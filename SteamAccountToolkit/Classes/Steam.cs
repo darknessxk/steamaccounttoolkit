@@ -22,11 +22,19 @@ namespace SteamAccountToolkit.Classes
         private Storage Storage { get; }
         private Cryptography Crypto { get; }
 
+        public string CurrentStatus = "";
+
         public Steam(Storage storage, Cryptography crypto)
         {
+            Globals.Log.Info("Steam initializing");
+
+            Globals.Log.Info("Setting Cryptography module");
             Crypto = crypto;
+
+            Globals.Log.Info("Setting Storage module");
             Storage = storage;
 
+            Globals.Log.Info("Checking if Users folder exists");
             if (!Directory.Exists(UsersPath))
                 Directory.CreateDirectory(UsersPath);
         }
@@ -42,16 +50,22 @@ namespace SteamAccountToolkit.Classes
 
         public bool IsOnMainWindow()
         {
+            CurrentStatus = "on Main Window";
+            Globals.Log.Info(CurrentStatus);
             return GetSteamMainWindow() != IntPtr.Zero;
         }
 
         public bool IsOnSteamGuard()
         {
+            CurrentStatus = "on Steam Guard window";
+            Globals.Log.Info(CurrentStatus);
             return GetSteamLoginWindow() != IntPtr.Zero;
         }
 
         public bool IsOnLogin()
         {
+            CurrentStatus = "on Login Window";
+            Globals.Log.Info(CurrentStatus);
             return GetSteamLoginWindow() != IntPtr.Zero;
         }
 
@@ -73,6 +87,7 @@ namespace SteamAccountToolkit.Classes
 
         public void LoadUserFromFile(string filePath, byte[] encKey = null)
         {
+            Globals.Log.Info($"Loading user from a file-> {filePath}");
             var pak = Storage.Load(filePath, Globals.Encoder.GetBytes("SteamUser"));
             if (pak.Data.Length <= 0) return;
 
@@ -91,9 +106,12 @@ namespace SteamAccountToolkit.Classes
 
                 var objData = f.Deserialize(ms);
 
-                if (objData is SteamUser.SerializableSteamUser user)
-                    AddNewUser(new SteamUser(user));
+                if (!(objData is SteamUser.SerializableSteamUser user)) return;
+                var u = new SteamUser(user);
+                AddNewUser(u);
+                Globals.Log.Info($"User load completed");
             }
+
         }
 
         public void AddNewUser(SteamUser user)
@@ -186,15 +204,23 @@ namespace SteamAccountToolkit.Classes
 
         public void Shutdown()
         {
+            CurrentStatus = "executing shutdown";
+            Globals.Log.Info(CurrentStatus);
             Process.Start(new ProcessStartInfo(GetSteamPath(), "-shutdown"));
         }
 
+        public bool SteamIsProcessOpen() => Process.GetProcessesByName("Steam").Length > 0;
+
         public void DoLogin(SteamUser login)
         {
+            Globals.Log.Info($"Steam.DoLogin method called");
             Task.Run(() =>
             {
+                CurrentStatus = "Steam Automatic Login Routine Routine Started";
+                Globals.Log.Info(CurrentStatus);
+
                 var calledShutdown = false;
-                while (IsOnSteamGuard() || IsOnMainWindow() || IsOnLogin())
+                while (IsOnSteamGuard() || IsOnMainWindow() || IsOnLogin() || SteamIsProcessOpen())
                 {
                     if (!calledShutdown)
                     {
@@ -206,12 +232,22 @@ namespace SteamAccountToolkit.Classes
                 }
 
                 Process.Start(new ProcessStartInfo(GetSteamPath(), $"-login {login.Username} {login.Password}"));
-
-                while (!IsOnLogin() || Process.GetProcessesByName("Steam").Length == 0)
+                CurrentStatus = "Waiting for Steam Process Spawn";
+                Globals.Log.Info(CurrentStatus);
+                while (!SteamIsProcessOpen())
                     Thread.Sleep(10);
 
+                CurrentStatus = "Waiting for Steam Login Window";
+                Globals.Log.Info(CurrentStatus);
+                while (!IsOnLogin())
+                    Thread.Sleep(10);
+
+                CurrentStatus = "Waiting for Steam Guard Window";
+                Globals.Log.Info(CurrentStatus);
                 while (IsOnSteamGuard() && !IsOnMainWindow())
                 {
+                    CurrentStatus = "Steam Guard Routine Routine Started";
+                    Globals.Log.Info(CurrentStatus);
                     Thread.Sleep(250); // CPU Saving and window timing
                     //Do steam guard job here
                     var sgHwnd = GetSteamGuardWindow();
@@ -240,8 +276,13 @@ namespace SteamAccountToolkit.Classes
                         5000); // i think 5 seconds is enough hmm (3 seconds sometimes send another key command)
                     if (!IsOnSteamGuard())
                         break;
+
+                    CurrentStatus = "Steam Guard Routine Routine End";
+                    Globals.Log.Info(CurrentStatus);
                 }
 
+                CurrentStatus = "Steam Automatic Login Routine Routine End";
+                Globals.Log.Info(CurrentStatus);
                 //continue to main window gg!
             });
         }

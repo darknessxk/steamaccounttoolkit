@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="SteamAccountToolkit.Views.EncryptionKeyRequest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"   
+             Height="400" Width="800"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Label HorizontalAlignment="Center" Content="Enter your encryption password" FontSize="20" />
+        <PasswordBox Margin="20, 0, 20, 0" />
+        <Button Content="Enter" Command="{Binding SubmitEncryptionKeyCommand}" Margin="20" />
+        <TextBlock HorizontalAlignment="Center" Margin="0, 25, 0, 0" TextAlignment="Center">
+            In case you lost your encryption key you can do a factory reset but<LineBreak />
+            <Bold Foreground="#FF0000">YOU WILL LOSE ALL YOUR DATA</Bold>
+            <LineBreak/>
+            <Bold Foreground="#FF0000">THIS IS IRREVERSIBLE</Bold>
+        </TextBlock>
+        <Button Content="Factory Reset" Command="{Binding RequestFactoryResetCommand}" Margin="20" />
+
+    </StackPanel>
+</UserControl>

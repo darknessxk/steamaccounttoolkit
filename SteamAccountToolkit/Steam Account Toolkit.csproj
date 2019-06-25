@@ -105,6 +105,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\DataPack.cs" />
+    <Compile Include="Classes\Logger.cs" />
     <Compile Include="Classes\Security\Cryptography.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Utils.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="ViewModels\AddUserViewModel.cs" />
     <Compile Include="ViewModels\AppMainViewModel.cs" />
     <Compile Include="ViewModels\CaptchaSubmitPageViewModel.cs" />
+    <Compile Include="ViewModels\ConsolePageViewModel.cs" />
     <Compile Include="ViewModels\EmailCodeSubmitPageViewModel.cs" />
     <Compile Include="ViewModels\EncryptionKeyRequestViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
@@ -133,6 +135,9 @@
     <Compile Include="Classes\Win32\WindowHelper.cs" />
     <Compile Include="Views\CaptchaSubmitPage.xaml.cs">
       <DependentUpon>CaptchaSubmitPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConsolePage.xaml.cs">
+      <DependentUpon>ConsolePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EmailCodeSubmitPage.xaml.cs">
       <DependentUpon>EmailCodeSubmitPage.xaml</DependentUpon>
@@ -166,6 +171,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\CaptchaSubmitPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConsolePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

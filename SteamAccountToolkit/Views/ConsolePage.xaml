@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="SteamAccountToolkit.Views.ConsolePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"    
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             Height="400" Width="800"
+             xmlns:local="clr-namespace:SteamAccountToolkit"
+             xmlns:classes="clr-namespace:SteamAccountToolkit.Classes"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/shared"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top">
+            <Label ContentStringFormat="Steam Status: {0}" Content="None" />
+        </WrapPanel>
+
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock HorizontalAlignment="Center" Text="Console Log" />
+            </StackPanel>
+
+            <ListView SelectionMode="Single" ItemsSource="{x:Static local:Globals.LoggerCollectionProp}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel>
+                            <TextBlock>
+                                [<Run Text="{Binding Type}" /> -> <Run Text="{Binding LoggedAt}" />]
+                                [Thread: <Run Text="{Binding ThreadId, Mode=OneWay}" />] <Run Text="{Binding Message}" />
+                            </TextBlock>
+                        </WrapPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

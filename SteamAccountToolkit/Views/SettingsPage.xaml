@@ -49,7 +49,7 @@
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Encryption" HorizontalAlignment="Left" Height="250" Margin="215,10,0,0" VerticalAlignment="Top" Width="230">
+                <GroupBox Header="Encryption (IN DEVELOPMENT)" HorizontalAlignment="Left" Height="250" Margin="215,10,0,0" VerticalAlignment="Top" Width="230">
                     <StackPanel HorizontalAlignment="Center">
                         <Button Content="Set Encryption Key" Margin="5" />
                         <WrapPanel HorizontalAlignment="Center" Margin="5">

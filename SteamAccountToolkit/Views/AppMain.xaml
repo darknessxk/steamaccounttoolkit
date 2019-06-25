@@ -30,13 +30,19 @@
             <Button Margin="2" Content="&#xf0c0;" FontFamily="{StaticResource FontAwesome-Solid}"
                     Command="{Binding NavigateCommand}" CommandParameter="UsersList">
                 <Button.ToolTip>
-                    <TextBlock FontWeight="Bold" Text="Users List" />
+                    Users List
                 </Button.ToolTip>
             </Button>
             <Button Margin="2" Content="&#xf013;" FontFamily="{StaticResource FontAwesome-Solid}"
                     Command="{Binding NavigateCommand}" CommandParameter="SettingsPage">
                 <Button.ToolTip>
-                    <TextBlock FontWeight="Bold" Text="Settings" />
+                    Settings
+                </Button.ToolTip>
+            </Button>
+            <Button Margin="2" Content="&#xf120;" FontFamily="{StaticResource FontAwesome-Solid}"
+                    Command="{Binding NavigateCommand}" CommandParameter="ConsoleView">
+                <Button.ToolTip>
+                    View Console and Logger output
                 </Button.ToolTip>
             </Button>
         </StackPanel>
